@@ -21,8 +21,9 @@ This living checklist tracks the verification status of all security controls ac
 | **Bcrypt Password Hashing** | Store passwords as salted bcrypt hashes (>=10 rounds) | Stage 3 | `server/src/tests/unit/user.model.test.js` & `server/src/tests/integration/auth.test.js` | ✅ **Passed** |
 | **JWT Authentication & Protection** | Verify Bearer JWT tokens, reject tampered/expired tokens, exclude passwordHash | Stage 3 | `server/src/tests/unit/authenticate.test.js` & `server/src/tests/integration/auth.test.js` | ✅ **Passed** |
 
-| **Ownership Authorization** | Scoped queries preventing unauthorized cross-user access | Stage 4 | Pending Stage 4 implementation | ⏳ Pending |
-| **SSRF Address Filter** | Block private, loopback, and cloud metadata IP destinations | Stage 4 | Pending Stage 4 implementation | ⏳ Pending |
+| **Ownership Authorization** | Scoped queries preventing unauthorized cross-user access | Stage 4 | `server/src/tests/integration/target.test.js` | ✅ **Passed** |
+| **SSRF Address Filter** | Block private, loopback, and cloud metadata IP destinations | Stage 4 | `server/src/tests/unit/ssrfFilter.test.js` & `server/src/tests/integration/target.test.js` | ✅ **Passed** |
+
 | **Safe Process Invocation** | Use argument arrays with `spawn` without shell interpolation | Stage 7 | Pending Stage 7 implementation | ⏳ Pending |
 | **Hard Concurrency Caps** | Enforce maximum concurrent active tests per instance | Stage 7 | Pending Stage 7 implementation | ⏳ Pending |
 | **Sensitive Header Masking**| Redact secrets in target configs and exported results | Stage 10 | Pending Stage 10 implementation | ⏳ Pending |

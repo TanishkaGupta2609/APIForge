@@ -9,8 +9,10 @@ import { apiLimiter } from './middleware/rateLimiter.js';
 import notFound from './middleware/notFound.js';
 import errorHandler from './middleware/errorHandler.js';
 import authRoutes from './modules/auth/auth.routes.js';
+import targetRoutes from './modules/targets/target.routes.js';
 
 const app = express();
+
 
 // Security headers with Helmet
 app.use(helmet());
@@ -53,6 +55,10 @@ app.get('/api/health', (req, res) => {
 
 // Authentication routes
 app.use('/api/auth', authRoutes);
+
+// Target management routes (Protected)
+app.use('/api/targets', targetRoutes);
+
 
 // 404 Handler for unmatched routes
 app.use(notFound);

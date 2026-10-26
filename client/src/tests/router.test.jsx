@@ -37,7 +37,7 @@ describe('Client Router Navigation Behavior', () => {
     const memoryRouter = createTestRouter(['/targets']);
     renderWithAuth(memoryRouter);
 
-    expect(screen.getByText('Registered Targets')).toBeInTheDocument();
+    expect(screen.getAllByText('Target APIs').length).toBeGreaterThan(0);
 
     await waitFor(() => {
       expect(screen.getAllByText(/online/i).length).toBeGreaterThan(0);

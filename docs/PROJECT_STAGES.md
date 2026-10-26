@@ -11,9 +11,10 @@ This document tracks the progress of the staged implementation plan defined in `
 | **Stage 0** | Workspace inspection and project setup | **Completed** | ✅ Yes |
 | **Stage 1** | Backend foundation | **Completed** | ✅ Yes |
 | **Stage 2** | Frontend foundation and design system | **Completed** | ✅ Yes |
-| **Stage 3** | Authentication & Authorization | **Ready for Review** | ✅ Yes |
-| **Stage 4** | Target management | **Pending** | ⏳ Next |
-| **Stage 5** | Built-in Demo API | **Pending** | ⏳ |
+| **Stage 3** | Authentication & Authorization | **Completed** | ✅ Yes |
+| **Stage 4** | Target management | **Ready for Review** | ✅ Yes |
+| **Stage 5** | Built-in Demo API | **Pending** | ⏳ Next |
+
 | **Stage 6** | Test configuration and lifecycle | **Pending** | ⏳ |
 | **Stage 7** | Real k6 execution engine | **Pending** | ⏳ |
 | **Stage 8** | Results dashboard & charts | **Pending** | ⏳ |
@@ -69,7 +70,7 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Component unit tests (`components.test.jsx`) and router navigation integration tests (`router.test.jsx`).
 - [x] Production build passes cleanly in 4.06s; lint checks pass with 0 errors and 0 warnings.
 
-### Stage 3: Authentication & Authorization (Ready for Review)
+### Stage 3: Authentication & Authorization (Completed)
 - [x] User schema with encrypted password hash (`bcryptjs`) and email uniqueness index (`user.model.js`).
 - [x] User registration controller & Zod validation schema (`auth.validation.js`, `auth.controller.js`).
 - [x] User login controller with secure JWT token issuance and credential verification.
@@ -80,6 +81,19 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Interactive Login and Register forms with live validation alerts and redirect handling.
 - [x] Automated backend unit & integration tests (user model hashing, JWT verification, registration, duplicate rejection, invalid credentials, profile fetching: 42 server tests passing).
 - [x] Automated frontend unit & router tests (form rendering, input binding, rejection alert, unauthenticated redirect: 22 client tests passing).
+
+### Stage 4: Target Management (Ready for Review)
+- [x] Target Mongoose model (`target.model.js`) with owner reference, compound index `{ owner: 1, createdAt: -1 }`, and `lastHealthCheck` tracking.
+- [x] Multi-layer SSRF defense utility (`ssrfFilter.js`) preventing access to loopbacks (`127.0.0.0/8`), private RFC 1918 subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), and cloud metadata (`169.254.169.254`).
+- [x] Zod validation schemas (`target.validation.js`) for target creation, update, and MongoId parameter validation.
+- [x] Target controller & service with user-scoped CRUD operations ensuring strict tenant ownership isolation.
+- [x] Live target health probe endpoint (`POST /api/targets/:id/health`) with 5-second timeout and latency measurement.
+- [x] Frontend Target API service (`targetService.js`) handling target CRUD and health checks.
+- [x] Interactive Targets UI (`TargetsPage.jsx`) with target cards, search filtering, dynamic headers editor, "Use Demo API" quick filler, and live health status badges.
+- [x] Unit tests for SSRF filter (`ssrfFilter.test.js`: 13 passing) and Target model (`target.model.test.js`: 4 passing).
+- [x] Integration tests for Target endpoints (`target.test.js`: 6 passing, verifying tenant isolation, SSRF blocking, and health probes: 65 server tests passing total).
+- [x] Frontend component tests (`targets.test.jsx`: 4 passing, 26 client tests passing total).
+
 
 
 ---
