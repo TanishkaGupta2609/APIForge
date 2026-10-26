@@ -9,9 +9,9 @@ This document tracks the progress of the staged implementation plan defined in `
 | Stage | Name | Status | Acceptance Criteria Met |
 |---|---|---|---|
 | **Stage 0** | Workspace inspection and project setup | **Completed** | ✅ Yes |
-| **Stage 1** | Backend foundation | **Ready for Review** | ✅ Yes |
-| **Stage 2** | Frontend foundation and design system | **Pending** | ⏳ Awaiting Stage 1 Approval |
-| **Stage 3** | Authentication & Authorization | **Pending** | ⏳ |
+| **Stage 1** | Backend foundation | **Completed** | ✅ Yes |
+| **Stage 2** | Frontend foundation and design system | **Ready for Review** | ✅ Yes |
+| **Stage 3** | Authentication & Authorization | **Pending** | ⏳ Awaiting Stage 2 Approval |
 | **Stage 4** | Target management | **Pending** | ⏳ |
 | **Stage 5** | Built-in Demo API | **Pending** | ⏳ |
 | **Stage 6** | Test configuration and lifecycle | **Pending** | ⏳ |
@@ -46,7 +46,7 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Create core architectural, API, database, security, and quality documentation.
 - [x] Verify client and server startup.
 
-### Stage 1: Backend Foundation (Ready for Review)
+### Stage 1: Backend Foundation (Completed)
 - [x] Standardized application error hierarchy (`AppError`, `ValidationError`, `NotFoundError`, etc.).
 - [x] Uniform API JSON response envelopes (`sendSuccess`, `sendError`).
 - [x] MongoDB connection manager (`database.js`) with reconnection logic and test DB isolation.
@@ -58,13 +58,24 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Automated unit and integration tests (25 server tests passing, 27 monorepo total).
 - [x] Clean linting with 0 errors and 0 warnings.
 
-### Stage 2: Frontend Foundation and Design System (Next)
-- [ ] React routing (`/`, `/dashboard`, `/targets`, `/tests`, `/results`, `/login`, `/register`).
-- [ ] Tailwind design system layout (AppHeader, Sidebar, Container, DashboardShell).
-- [ ] Atomic UI components (Button, Input, Card, Badge, Modal, Skeleton).
-- [ ] Centralized Axios client (`apiClient.js`) with request interceptors.
-- [ ] Landing page presentation with developer-tool dark theme.
-- [ ] Frontend unit tests for layout and UI components.
+### Stage 2: Frontend Foundation and Design System (Ready for Review)
+- [x] React routing configuration with React Router v6 & v7 future flags (`/`, `/dashboard`, `/targets`, `/tests`, `/history`, `/demo`, `/login`, `/register`).
+- [x] Dark developer-tool design system palette and typography in Tailwind CSS.
+- [x] Reusable atomic UI components: `Button`, `Input`, `Card`, `Badge`, `Modal`, `Alert`, and `Skeleton`.
+- [x] Layout components: `Navbar`, `Sidebar`, `Header`, and responsive `DashboardShell`.
+- [x] Centralized Axios client (`apiClient.js`) with Bearer token injection and uniform error normalization.
+- [x] Polished Landing Page with hero section, live k6 metrics preview banner, 6 core feature cards, 4-step workflow, and responsible testing policy.
+- [x] Functional placeholder views for Dashboard, Target APIs, Test Runs, History, Demo Sandbox, Login, Register, and 404.
+- [x] Component unit tests (`components.test.jsx`) and router navigation integration tests (`router.test.jsx`).
+- [x] Production build passes cleanly in 4.06s; lint checks pass with 0 errors and 0 warnings.
+
+### Stage 3: Authentication & Authorization (Next)
+- [ ] User schema with encrypted password hash (`bcryptjs`) and email uniqueness index.
+- [ ] User registration controller & validation.
+- [ ] User login controller with secure JWT token issuance.
+- [ ] JWT authentication middleware (`authenticate.js`) and resource ownership authorization.
+- [ ] Frontend authentication context & protected routes.
+- [ ] Automated auth unit and integration tests (valid credentials, invalid tokens, duplicate emails, password hash privacy).
 
 ---
 

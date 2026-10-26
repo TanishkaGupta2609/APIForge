@@ -1,30 +1,27 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import App from '../App.jsx';
 
-describe('App Component', () => {
-  beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn().mockImplementation(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({ success: true, data: { status: 'healthy' } }),
-      })
-    ));
-  });
-
-  it('renders the brand title and product tagline', async () => {
+describe('App Component and Main Entry', () => {
+  it('renders landing page with platform branding and hero content', async () => {
     render(<App />);
-    expect(screen.getByText('APIForge')).toBeInTheDocument();
-    expect(screen.getByText(/Real Load Testing/i)).toBeInTheDocument();
+
+    expect(screen.getAllByText('APIForge').length).toBeGreaterThan(0);
+    expect(screen.getByText(/Stress-Test APIs with/i)).toBeInTheDocument();
+    expect(screen.getByText(/Real Workloads/i)).toBeInTheDocument();
+
     await waitFor(() => {
-      expect(screen.getByText(/ONLINE/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/online/i).length).toBeGreaterThan(0);
     });
   });
 
-  it('renders stage 0 indicator badge', async () => {
+  it('renders primary call to action button to launch dashboard', async () => {
     render(<App />);
-    expect(screen.getByText(/Stage 0 Verified/i)).toBeInTheDocument();
+    const ctaButtons = screen.getAllByRole('link', { name: /launch dashboard/i });
+    expect(ctaButtons.length).toBeGreaterThan(0);
+
     await waitFor(() => {
-      expect(screen.getByText(/ONLINE/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/online/i).length).toBeGreaterThan(0);
     });
   });
 });

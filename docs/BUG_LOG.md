@@ -57,3 +57,21 @@ This log documents issues identified during development, their verified root cau
 - **Fix Applied**: Updated test cases to inspect actual initial connection state and spy on `mongoose.connect` and `mongoose.disconnect` directly.
 - **Regression Test**: All 25 server tests passed cleanly (`npm run test --workspace=server`).
 - **Verification Date**: 2026-10-26
+
+---
+
+### BUG-004: Missing Link import in Header.jsx causing ReferenceError during route rendering
+- **Bug ID**: `BUG-004`
+- **Affected Feature**: Frontend Navigation Header
+- **Severity**: Medium
+- **Status**: **Resolved**
+- **Reproduction Steps**:
+  1. Run `npm test` after adding `DashboardShell` to route components
+  2. Notice test failure: `ReferenceError: Link is not defined at Header (Header.jsx:44:10)`
+- **Expected Behavior**: Header component renders "New Test" link without throwing runtime reference errors.
+- **Actual Behavior**: The `Link` component was unimported during icon cleanup.
+- **Verified Root Cause**: `import { Link } from 'react-router-dom'` was inadvertently omitted when removing unused `User` icon from imports.
+- **Files Changed**: `client/src/components/layout/Header.jsx`
+- **Fix Applied**: Restored `import { Link } from 'react-router-dom'` in `Header.jsx`.
+- **Regression Test**: Full client router test suite passed cleanly (`npm run test --workspace=client`).
+- **Verification Date**: 2026-10-26
