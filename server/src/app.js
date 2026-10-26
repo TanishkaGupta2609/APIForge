@@ -10,6 +10,8 @@ import notFound from './middleware/notFound.js';
 import errorHandler from './middleware/errorHandler.js';
 import authRoutes from './modules/auth/auth.routes.js';
 import targetRoutes from './modules/targets/target.routes.js';
+import demoRoutes from './modules/demo/demo.routes.js';
+
 
 const app = express();
 
@@ -58,6 +60,10 @@ app.use('/api/auth', authRoutes);
 
 // Target management routes (Protected)
 app.use('/api/targets', targetRoutes);
+
+// Demo API sandbox routes (Unauthenticated benchmarks)
+app.use('/api/demo', demoRoutes);
+
 
 
 // 404 Handler for unmatched routes

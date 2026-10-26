@@ -12,10 +12,10 @@ This document tracks the progress of the staged implementation plan defined in `
 | **Stage 1** | Backend foundation | **Completed** | ✅ Yes |
 | **Stage 2** | Frontend foundation and design system | **Completed** | ✅ Yes |
 | **Stage 3** | Authentication & Authorization | **Completed** | ✅ Yes |
-| **Stage 4** | Target management | **Ready for Review** | ✅ Yes |
-| **Stage 5** | Built-in Demo API | **Pending** | ⏳ Next |
+| **Stage 4** | Target management | **Completed** | ✅ Yes |
+| **Stage 5** | Built-in Demo API | **Ready for Review** | ✅ Yes |
+| **Stage 6** | Test configuration and lifecycle | **Pending** | ⏳ Next |
 
-| **Stage 6** | Test configuration and lifecycle | **Pending** | ⏳ |
 | **Stage 7** | Real k6 execution engine | **Pending** | ⏳ |
 | **Stage 8** | Results dashboard & charts | **Pending** | ⏳ |
 | **Stage 9** | Test history & filtering | **Pending** | ⏳ |
@@ -82,7 +82,7 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Automated backend unit & integration tests (user model hashing, JWT verification, registration, duplicate rejection, invalid credentials, profile fetching: 42 server tests passing).
 - [x] Automated frontend unit & router tests (form rendering, input binding, rejection alert, unauthenticated redirect: 22 client tests passing).
 
-### Stage 4: Target Management (Ready for Review)
+### Stage 4: Target Management (Completed)
 - [x] Target Mongoose model (`target.model.js`) with owner reference, compound index `{ owner: 1, createdAt: -1 }`, and `lastHealthCheck` tracking.
 - [x] Multi-layer SSRF defense utility (`ssrfFilter.js`) preventing access to loopbacks (`127.0.0.0/8`), private RFC 1918 subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), and cloud metadata (`169.254.169.254`).
 - [x] Zod validation schemas (`target.validation.js`) for target creation, update, and MongoId parameter validation.
@@ -93,6 +93,19 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Unit tests for SSRF filter (`ssrfFilter.test.js`: 13 passing) and Target model (`target.model.test.js`: 4 passing).
 - [x] Integration tests for Target endpoints (`target.test.js`: 6 passing, verifying tenant isolation, SSRF blocking, and health probes: 65 server tests passing total).
 - [x] Frontend component tests (`targets.test.jsx`: 4 passing, 26 client tests passing total).
+
+### Stage 5: Built-in Demo API (Ready for Review)
+- [x] Isolated Demo Express application (`demoApp.js`) bound to port `:5001` with independent CORS and security headers.
+- [x] Instant baseline ping endpoint (`GET /api/demo/ping`) establishing zero-overhead throughput baseline.
+- [x] Health check probe (`GET /api/demo/health`) exposing scenario directory and uptime.
+- [x] Artificial latency injection endpoint (`GET /api/demo/delayed?ms=250`) with configurable, clamped server-side delay.
+- [x] Controlled fault injection endpoint (`GET /api/demo/error?status=500&rate=1.0`) simulating error responses for threshold evaluation.
+- [x] Sliding-window rate-limiting endpoint (`GET /api/demo/rate-limited`) returning HTTP 429 and `Retry-After` headers when limits are exceeded.
+- [x] Frontend Demo service (`demoService.js`) with measurement of client-observed roundtrip latency.
+- [x] Interactive Demo Sandbox UI (`DemoPage.jsx`) with live request runner, latency slider, error status dropdown, and 8-request burst traffic simulator.
+- [x] Automated backend integration tests (`demo.test.js`: 7 passing, 72 server tests passing total).
+- [x] Automated frontend component tests (`demo.test.jsx`: 4 passing, 30 client tests passing total).
+
 
 
 
