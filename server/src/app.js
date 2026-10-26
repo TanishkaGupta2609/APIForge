@@ -8,6 +8,7 @@ import { sendSuccess } from './shared/utils/response.js';
 import { apiLimiter } from './middleware/rateLimiter.js';
 import notFound from './middleware/notFound.js';
 import errorHandler from './middleware/errorHandler.js';
+import authRoutes from './modules/auth/auth.routes.js';
 
 const app = express();
 
@@ -49,6 +50,9 @@ app.get('/api/health', (req, res) => {
     'APIForge server is running'
   );
 });
+
+// Authentication routes
+app.use('/api/auth', authRoutes);
 
 // 404 Handler for unmatched routes
 app.use(notFound);

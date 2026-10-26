@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, Menu, X, ArrowRight } from 'lucide-react';
+import { Activity, Menu, X, ArrowRight, User } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 export function Navbar({ serverStatus = 'online' }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, isAuthenticated } = useAuth();
 
   const navLinks = [
     { name: 'Features', href: '#features' },
@@ -69,13 +71,31 @@ export function Navbar({ serverStatus = 'online' }) {
               <span className="capitalize">{serverStatus}</span>
             </div>
 
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 px-3.5 py-2 rounded-lg transition shadow-sm shadow-indigo-950"
-            >
-              <span>Launch Dashboard</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            {isAuthenticated && user ? (
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 px-3.5 py-2 rounded-lg transition shadow-sm shadow-indigo-950"
+              >
+                <User className="h-3.5 w-3.5" />
+                <span>Dashboard</span>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-xs font-medium text-slate-300 hover:text-white px-3 py-2 transition"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/dashboard"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 px-3.5 py-2 rounded-lg transition shadow-sm shadow-indigo-950"
+                >
+                  <span>Launch Dashboard</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu trigger */}
@@ -116,13 +136,22 @@ export function Navbar({ serverStatus = 'online' }) {
               </Link>
             )
           ))}
-          <div className="pt-2 border-t border-slate-800">
+          <div className="pt-2 border-t border-slate-800 flex flex-col gap-2">
+            {!isAuthenticated && (
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-center text-sm font-medium text-slate-300 hover:text-white py-1.5"
+              >
+                Sign in
+              </Link>
+            )}
             <Link
               to="/dashboard"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full inline-flex items-center justify-center gap-2 text-sm font-medium text-white bg-indigo-600 px-4 py-2.5 rounded-lg"
             >
-              <span>Launch Dashboard</span>
+              <span>{isAuthenticated ? 'Go to Dashboard' : 'Launch Dashboard'}</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

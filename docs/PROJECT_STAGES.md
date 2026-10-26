@@ -10,9 +10,9 @@ This document tracks the progress of the staged implementation plan defined in `
 |---|---|---|---|
 | **Stage 0** | Workspace inspection and project setup | **Completed** | ✅ Yes |
 | **Stage 1** | Backend foundation | **Completed** | ✅ Yes |
-| **Stage 2** | Frontend foundation and design system | **Ready for Review** | ✅ Yes |
-| **Stage 3** | Authentication & Authorization | **Pending** | ⏳ Awaiting Stage 2 Approval |
-| **Stage 4** | Target management | **Pending** | ⏳ |
+| **Stage 2** | Frontend foundation and design system | **Completed** | ✅ Yes |
+| **Stage 3** | Authentication & Authorization | **Ready for Review** | ✅ Yes |
+| **Stage 4** | Target management | **Pending** | ⏳ Next |
 | **Stage 5** | Built-in Demo API | **Pending** | ⏳ |
 | **Stage 6** | Test configuration and lifecycle | **Pending** | ⏳ |
 | **Stage 7** | Real k6 execution engine | **Pending** | ⏳ |
@@ -58,7 +58,7 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Automated unit and integration tests (25 server tests passing, 27 monorepo total).
 - [x] Clean linting with 0 errors and 0 warnings.
 
-### Stage 2: Frontend Foundation and Design System (Ready for Review)
+### Stage 2: Frontend Foundation and Design System (Completed)
 - [x] React routing configuration with React Router v6 & v7 future flags (`/`, `/dashboard`, `/targets`, `/tests`, `/history`, `/demo`, `/login`, `/register`).
 - [x] Dark developer-tool design system palette and typography in Tailwind CSS.
 - [x] Reusable atomic UI components: `Button`, `Input`, `Card`, `Badge`, `Modal`, `Alert`, and `Skeleton`.
@@ -69,13 +69,18 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Component unit tests (`components.test.jsx`) and router navigation integration tests (`router.test.jsx`).
 - [x] Production build passes cleanly in 4.06s; lint checks pass with 0 errors and 0 warnings.
 
-### Stage 3: Authentication & Authorization (Next)
-- [ ] User schema with encrypted password hash (`bcryptjs`) and email uniqueness index.
-- [ ] User registration controller & validation.
-- [ ] User login controller with secure JWT token issuance.
-- [ ] JWT authentication middleware (`authenticate.js`) and resource ownership authorization.
-- [ ] Frontend authentication context & protected routes.
-- [ ] Automated auth unit and integration tests (valid credentials, invalid tokens, duplicate emails, password hash privacy).
+### Stage 3: Authentication & Authorization (Ready for Review)
+- [x] User schema with encrypted password hash (`bcryptjs`) and email uniqueness index (`user.model.js`).
+- [x] User registration controller & Zod validation schema (`auth.validation.js`, `auth.controller.js`).
+- [x] User login controller with secure JWT token issuance and credential verification.
+- [x] JWT authentication middleware (`authenticate.js`) attaching sanitized `req.user`.
+- [x] `GET /api/auth/me` endpoint returning currently authenticated user profile.
+- [x] Frontend authentication service (`authService.js`) and persistent AuthContext (`AuthContext.jsx`).
+- [x] Protected route component (`ProtectedRoute.jsx`) safeguarding private dashboard routes.
+- [x] Interactive Login and Register forms with live validation alerts and redirect handling.
+- [x] Automated backend unit & integration tests (user model hashing, JWT verification, registration, duplicate rejection, invalid credentials, profile fetching: 42 server tests passing).
+- [x] Automated frontend unit & router tests (form rendering, input binding, rejection alert, unauthenticated redirect: 22 client tests passing).
+
 
 ---
 

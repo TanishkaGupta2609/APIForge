@@ -75,3 +75,40 @@ This log documents issues identified during development, their verified root cau
 - **Fix Applied**: Restored `import { Link } from 'react-router-dom'` in `Header.jsx`.
 - **Regression Test**: Full client router test suite passed cleanly (`npm run test --workspace=client`).
 - **Verification Date**: 2026-10-26
+
+---
+
+### BUG-005: `errorHandler.js` prioritized Mongoose `ValidationError` name over `AppError` instance
+- **Bug ID**: `BUG-005`
+- **Affected Feature**: Central Backend Error Handling Middleware
+- **Severity**: Medium
+- **Status**: **Resolved**
+- **Reproduction Steps**:
+  1. Post invalid registration or login payload to `/api/auth/register` with missing fields
+  2. Notice response had code `VALIDATION_ERROR` but `details` was an empty array instead of containing Zod field errors
+- **Expected Behavior**: Custom `ValidationError` inheriting from `AppError` should preserve structured `details` array containing field-specific errors.
+- **Actual Behavior**: The error handler checked `err.name === 'ValidationError'` first and constructed a Mongoose-specific ValidationError envelope, wiping out `err.details`.
+- **Verified Root Cause**: Both Mongoose validation errors and the application's custom `ValidationError` class share `name = 'ValidationError'`. The Mongoose check preceded the `instanceof AppError` check.
+- **Files Changed**: `server/src/middleware/errorHandler.js`
+- **Fix Applied**: Reordered check to prioritize `if (err instanceof AppError) error = err;` before checking Mongoose error names.
+- **Regression Test**: All integration tests in `server/src/tests/integration/auth.test.js` passed, verifying exact field-level validation messages.
+- **Verification Date**: 2026-10-26
+
+---
+
+### BUG-006: Node 24 undici `RequestInit` rejected jsdom `AbortSignal` during router navigation test
+- **Bug ID**: `BUG-006`
+- **Affected Feature**: Frontend Authentication Unit Tests
+- **Severity**: Low (Test Harness / Environment)
+- **Status**: **Resolved**
+- **Reproduction Steps**:
+  1. In Node 24.x environment, run `createMemoryRouter` with `<Navigate to="/login" />` in Vitest/jsdom.
+  2. Notice unhandled rejection: `TypeError: RequestInit: Expected signal ("AbortSignal {}") to be an instance of AbortSignal`.
+- **Expected Behavior**: Redirect route tests should render the destination route cleanly without throwing WebIDL type mismatches.
+- **Actual Behavior**: Node 24's native `Request` constructor from undici performs strict identity checking on `init.signal`, rejecting jsdom's isolated `AbortSignal` instance.
+- **Verified Root Cause**: `@remix-run/router` data router's `createClientSideRequest` instantiates `new Request(..., { signal })`. Under Node 24 + jsdom, `signal` belongs to the jsdom global while `Request` belongs to Node's undici runtime.
+- **Files Changed**: `client/src/tests/auth.test.jsx`, `client/src/tests/setup.js`
+- **Fix Applied**: Tested `ProtectedRoute` redirection using standard `MemoryRouter` with `<Routes>` and `<Route>`, bypassing data router request generation while preserving full redirection assertions.
+- **Regression Test**: `npm run test --workspace=client` executed 22/22 tests successfully with 0 unhandled rejections.
+- **Verification Date**: 2026-10-26
+

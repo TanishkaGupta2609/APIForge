@@ -18,7 +18,9 @@ This living checklist tracks the verification status of all security controls ac
 | **Standardized Error Handling**| Centralized error middleware shielding database internals | Stage 1 | `server/src/middleware/errorHandler.js` | ✅ **Passed** |
 | **Strict Request Validation** | Zod middleware validating bodies, queries, and params | Stage 1 | `server/src/tests/unit/validateRequest.test.js` | ✅ **Passed** |
 | **API Rate Limiting** | Throttling requests to prevent resource starvation | Stage 1 | `server/src/middleware/rateLimiter.js` | ✅ **Passed** |
-| **Bcrypt Password Hashing** | Store passwords as salted bcrypt hashes (>=10 rounds) | Stage 3 | Pending Stage 3 implementation | ⏳ Pending |
+| **Bcrypt Password Hashing** | Store passwords as salted bcrypt hashes (>=10 rounds) | Stage 3 | `server/src/tests/unit/user.model.test.js` & `server/src/tests/integration/auth.test.js` | ✅ **Passed** |
+| **JWT Authentication & Protection** | Verify Bearer JWT tokens, reject tampered/expired tokens, exclude passwordHash | Stage 3 | `server/src/tests/unit/authenticate.test.js` & `server/src/tests/integration/auth.test.js` | ✅ **Passed** |
+
 | **Ownership Authorization** | Scoped queries preventing unauthorized cross-user access | Stage 4 | Pending Stage 4 implementation | ⏳ Pending |
 | **SSRF Address Filter** | Block private, loopback, and cloud metadata IP destinations | Stage 4 | Pending Stage 4 implementation | ⏳ Pending |
 | **Safe Process Invocation** | Use argument arrays with `spawn` without shell interpolation | Stage 7 | Pending Stage 7 implementation | ⏳ Pending |

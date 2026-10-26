@@ -20,12 +20,17 @@ export function errorHandler(err, req, res, _next) {
 
   let error = err;
 
-  // Handle JSON parsing syntax errors (e.g. malformed body)
-  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+  // 1. Pass through operational AppErrors directly (preserves pre-computed details & codes)
+  if (err instanceof AppError) {
+    error = err;
+  }
+
+  // 2. Handle JSON parsing syntax errors (e.g. malformed body)
+  else if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
     error = new BadRequestError('Malformed JSON payload in request body');
   }
 
-  // Handle Mongoose Validation Error
+  // 3. Handle Mongoose Validation Error (database-level)
   else if (err.name === 'ValidationError') {
     const details = Object.values(err.errors || {}).map((e) => ({
       field: e.path,
@@ -34,19 +39,19 @@ export function errorHandler(err, req, res, _next) {
     error = new ValidationError('Database validation error', details);
   }
 
-  // Handle Mongoose CastError (invalid ObjectId)
+  // 4. Handle Mongoose CastError (invalid ObjectId)
   else if (err.name === 'CastError') {
     error = new BadRequestError(`Invalid format for parameter: ${err.path}`);
   }
 
-  // Handle Mongoose Duplicate Key Error (E11000)
+  // 5. Handle Mongoose Duplicate Key Error (E11000)
   else if (err.code === 11000) {
     const duplicatedField = Object.keys(err.keyValue || {})[0] || 'field';
     error = new ConflictError(`Duplicate value entered for ${duplicatedField}`);
   }
 
-  // Fallback: If not an operational AppError, wrap in InternalServerError
-  else if (!(err instanceof AppError)) {
+  // 6. Fallback: If not an operational AppError, wrap in InternalServerError
+  else {
     if (env.NODE_ENV !== 'test') {
       console.error('[APIForge Server Error]', err);
     }

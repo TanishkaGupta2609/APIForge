@@ -1,6 +1,13 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
+// Align AbortController / AbortSignal in jsdom environment
+if (typeof window !== 'undefined') {
+  window.AbortController = globalThis.AbortController;
+  window.AbortSignal = globalThis.AbortSignal;
+}
+
+
 // Mock apiClient default GET responses for health check in tests
 vi.mock('../services/apiClient.js', async (importOriginal) => {
   const actual = await importOriginal();
@@ -14,6 +21,12 @@ vi.mock('../services/apiClient.js', async (importOriginal) => {
             success: true,
             data: { status: 'healthy', database: 'connected' },
             message: 'Mock health check',
+          });
+        }
+        if (url === '/auth/me') {
+          return Promise.resolve({
+            success: true,
+            data: { user: { id: 'u1', name: 'Test User', email: 'test@example.com' } },
           });
         }
         return Promise.resolve({ success: true, data: {} });
