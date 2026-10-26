@@ -1,3 +1,4 @@
+
 import { verifyToken } from '../modules/auth/jwt.service.js';
 import User from '../modules/auth/user.model.js';
 import { UnauthorizedError } from '../shared/errors/AppError.js';

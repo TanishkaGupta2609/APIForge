@@ -122,7 +122,10 @@ export function LandingPage() {
             <Button to="/dashboard" size="lg" className="w-full sm:w-auto" rightIcon={<ArrowRight className="h-4 w-4" />}>
               Launch Dashboard
             </Button>
-            <Button to="/demo" variant="secondary" size="lg" className="w-full sm:w-auto">
+            <Button to="/register" variant="secondary" size="lg" className="w-full sm:w-auto">
+              Create Account
+            </Button>
+            <Button to="/demo" variant="outline" size="lg" className="w-full sm:w-auto">
               Explore Demo Sandbox
             </Button>
           </div>

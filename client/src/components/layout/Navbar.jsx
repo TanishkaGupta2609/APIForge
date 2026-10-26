@@ -80,7 +80,7 @@ export function Navbar({ serverStatus = 'online' }) {
                 <span>Dashboard</span>
               </Link>
             ) : (
-              <>
+              <div className="flex items-center gap-2">
                 <Link
                   to="/login"
                   className="text-xs font-medium text-slate-300 hover:text-white px-3 py-2 transition"
@@ -88,13 +88,13 @@ export function Navbar({ serverStatus = 'online' }) {
                   Sign in
                 </Link>
                 <Link
-                  to="/dashboard"
+                  to="/register"
                   className="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 px-3.5 py-2 rounded-lg transition shadow-sm shadow-indigo-950"
                 >
-                  <span>Launch Dashboard</span>
+                  <span>Create Account</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
-              </>
+              </div>
             )}
           </div>
 
@@ -137,23 +137,34 @@ export function Navbar({ serverStatus = 'online' }) {
             )
           ))}
           <div className="pt-2 border-t border-slate-800 flex flex-col gap-2">
-            {!isAuthenticated && (
+            {!isAuthenticated ? (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-center text-sm font-medium text-slate-300 hover:text-white py-1.5"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full inline-flex items-center justify-center gap-2 text-sm font-medium text-white bg-indigo-600 px-4 py-2.5 rounded-lg"
+                >
+                  <span>Create Account</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </>
+            ) : (
               <Link
-                to="/login"
+                to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-center text-sm font-medium text-slate-300 hover:text-white py-1.5"
+                className="w-full inline-flex items-center justify-center gap-2 text-sm font-medium text-white bg-indigo-600 px-4 py-2.5 rounded-lg"
               >
-                Sign in
+                <span>Go to Dashboard</span>
+                <ArrowRight className="h-4 w-4" />
               </Link>
             )}
-            <Link
-              to="/dashboard"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full inline-flex items-center justify-center gap-2 text-sm font-medium text-white bg-indigo-600 px-4 py-2.5 rounded-lg"
-            >
-              <span>{isAuthenticated ? 'Go to Dashboard' : 'Launch Dashboard'}</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
           </div>
         </div>
       )}
