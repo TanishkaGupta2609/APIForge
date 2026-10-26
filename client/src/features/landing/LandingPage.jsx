@@ -119,16 +119,12 @@ export function LandingPage() {
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/dashboard">
-              <Button size="lg" className="w-full sm:w-auto" rightIcon={<ArrowRight className="h-4 w-4" />}>
-                Launch Dashboard
-              </Button>
-            </Link>
-            <Link to="/demo">
-              <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                Explore Demo Sandbox
-              </Button>
-            </Link>
+            <Button to="/dashboard" size="lg" className="w-full sm:w-auto" rightIcon={<ArrowRight className="h-4 w-4" />}>
+              Launch Dashboard
+            </Button>
+            <Button to="/demo" variant="secondary" size="lg" className="w-full sm:w-auto">
+              Explore Demo Sandbox
+            </Button>
           </div>
 
           {/* Interactive Metric Preview Banner */}

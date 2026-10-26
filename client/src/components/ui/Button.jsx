@@ -1,9 +1,12 @@
+import { Link } from 'react-router-dom';
 
 /**
  * Reusable design-system Button component.
+ * Supports rendering as a React Router <Link> when `to` prop is provided.
  */
 export function Button({
   children,
+  to = null,
   variant = 'primary',
   size = 'md',
   isLoading = false,
@@ -15,7 +18,7 @@ export function Button({
   ...props
 }) {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed select-none';
+    'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer';
 
   const variantStyles = {
     primary:
@@ -38,13 +41,25 @@ export function Button({
     lg: 'text-base px-5 py-2.5 gap-2.5',
   };
 
+  const combinedClasses = `${baseStyles} ${variantStyles[variant] || variantStyles.primary} ${
+    sizeStyles[size] || sizeStyles.md
+  } ${className}`;
+
+  if (to) {
+    return (
+      <Link to={to} className={combinedClasses} {...props}>
+        {leftIcon}
+        <span>{children}</span>
+        {rightIcon}
+      </Link>
+    );
+  }
+
   return (
     <button
       type={type}
       disabled={disabled || isLoading}
-      className={`${baseStyles} ${variantStyles[variant] || variantStyles.primary} ${
-        sizeStyles[size] || sizeStyles.md
-      } ${className}`}
+      className={combinedClasses}
       {...props}
     >
       {isLoading ? (

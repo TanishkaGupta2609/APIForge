@@ -94,16 +94,12 @@ export function DashboardPage() {
                     to see latency distributions and throughput charts.
                   </p>
                   <div className="pt-2 flex items-center justify-center gap-3">
-                    <Link to="/tests">
-                      <Button size="sm" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
-                        Configure First Test
-                      </Button>
-                    </Link>
-                    <Link to="/demo">
-                      <Button variant="secondary" size="sm">
-                        View Demo Sandbox
-                      </Button>
-                    </Link>
+                    <Button to="/tests" size="sm" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
+                      Configure First Test
+                    </Button>
+                    <Button to="/demo" variant="secondary" size="sm">
+                      View Demo Sandbox
+                    </Button>
                   </div>
                 </div>
               </CardContent>
