@@ -8,9 +8,9 @@ This document tracks the progress of the staged implementation plan defined in `
 
 | Stage | Name | Status | Acceptance Criteria Met |
 |---|---|---|---|
-| **Stage 0** | Workspace inspection and project setup | **Ready for Review** | ✅ Yes |
-| **Stage 1** | Backend foundation | **Pending** | ⏳ Awaiting Stage 0 Approval |
-| **Stage 2** | Frontend foundation and design system | **Pending** | ⏳ |
+| **Stage 0** | Workspace inspection and project setup | **Completed** | ✅ Yes |
+| **Stage 1** | Backend foundation | **Ready for Review** | ✅ Yes |
+| **Stage 2** | Frontend foundation and design system | **Pending** | ⏳ Awaiting Stage 1 Approval |
 | **Stage 3** | Authentication & Authorization | **Pending** | ⏳ |
 | **Stage 4** | Target management | **Pending** | ⏳ |
 | **Stage 5** | Built-in Demo API | **Pending** | ⏳ |
@@ -27,7 +27,7 @@ This document tracks the progress of the staged implementation plan defined in `
 
 ## Detailed Stage Checklists
 
-### Stage 0: Workspace Inspection & Project Setup
+### Stage 0: Workspace Inspection & Project Setup (Completed)
 - [x] Inspect existing workspace files before modifying anything.
 - [x] Preserve unrelated user work (`docs/MASTER_PROMPT.md`).
 - [x] Initialize Git repository (`.git`) and configure `.gitignore`.
@@ -46,15 +46,25 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Create core architectural, API, database, security, and quality documentation.
 - [x] Verify client and server startup.
 
-### Stage 1: Backend Foundation (Next)
-- [ ] Centralized Express application configuration.
-- [ ] MongoDB connection manager with reconnection logic and test database isolation.
-- [ ] Standardized JSON response formatting (`success`, `data`, `message`, `error`).
-- [ ] Centralized error handling middleware.
-- [ ] Centralized 404 handler.
-- [ ] Global request rate limiting.
-- [ ] Logging infrastructure (Morgan & structured console logger).
-- [ ] Automated tests for database connection handling, errors, and rate limits.
+### Stage 1: Backend Foundation (Ready for Review)
+- [x] Standardized application error hierarchy (`AppError`, `ValidationError`, `NotFoundError`, etc.).
+- [x] Uniform API JSON response envelopes (`sendSuccess`, `sendError`).
+- [x] MongoDB connection manager (`database.js`) with reconnection logic and test DB isolation.
+- [x] Request validation middleware (`validateRequest.js`) using Zod schemas for body, query, and params.
+- [x] Global and route-specific rate limiting (`rateLimiter.js`) using `express-rate-limit`.
+- [x] Centralized 404 handler (`notFound.js`) and error handler (`errorHandler.js`).
+- [x] Logging via Morgan and structured console logs.
+- [x] Health endpoint reporting live MongoDB connection state (`/api/health`).
+- [x] Automated unit and integration tests (25 server tests passing, 27 monorepo total).
+- [x] Clean linting with 0 errors and 0 warnings.
+
+### Stage 2: Frontend Foundation and Design System (Next)
+- [ ] React routing (`/`, `/dashboard`, `/targets`, `/tests`, `/results`, `/login`, `/register`).
+- [ ] Tailwind design system layout (AppHeader, Sidebar, Container, DashboardShell).
+- [ ] Atomic UI components (Button, Input, Card, Badge, Modal, Skeleton).
+- [ ] Centralized Axios client (`apiClient.js`) with request interceptors.
+- [ ] Landing page presentation with developer-tool dark theme.
+- [ ] Frontend unit tests for layout and UI components.
 
 ---
 

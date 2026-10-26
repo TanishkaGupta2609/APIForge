@@ -39,3 +39,21 @@ This log documents issues identified during development, their verified root cau
 - **Fix Applied**: Renamed `next` parameter to `_next` in the error handling middleware signature.
 - **Regression Test**: `npm run lint --workspace=server` passed with 0 warnings and 0 errors.
 - **Verification Date**: 2026-10-26
+
+---
+
+### BUG-003: Mongoose readyState property cannot be redefined in unit tests
+- **Bug ID**: `BUG-003`
+- **Affected Feature**: Database Connection Manager Tests
+- **Severity**: Medium
+- **Status**: **Resolved**
+- **Reproduction Steps**:
+  1. Run `npm run test --workspace=server`
+  2. Notice test failure: `TypeError: Cannot redefine property: readyState`
+- **Expected Behavior**: Unit tests should verify database lifecycle without crashing on runtime mock redefinition.
+- **Actual Behavior**: Vitest `vi.spyOn(mongoose.connection, 'readyState', 'get')` failed because `readyState` is a non-configurable accessor on modern Mongoose Connection prototypes.
+- **Verified Root Cause**: Modern Mongoose declares `readyState` as non-configurable, preventing property descriptors from being redefined via `Object.defineProperty`.
+- **Files Changed**: `server/src/tests/unit/database.test.js`
+- **Fix Applied**: Updated test cases to inspect actual initial connection state and spy on `mongoose.connect` and `mongoose.disconnect` directly.
+- **Regression Test**: All 25 server tests passed cleanly (`npm run test --workspace=server`).
+- **Verification Date**: 2026-10-26
