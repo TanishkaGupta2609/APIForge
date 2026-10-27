@@ -13,10 +13,10 @@ This document tracks the progress of the staged implementation plan defined in `
 | **Stage 2** | Frontend foundation and design system | **Completed** | ✅ Yes |
 | **Stage 3** | Authentication & Authorization | **Completed** | ✅ Yes |
 | **Stage 4** | Target management | **Completed** | ✅ Yes |
-| **Stage 5** | Built-in Demo API | **Ready for Review** | ✅ Yes |
-| **Stage 6** | Test configuration and lifecycle | **Pending** | ⏳ Next |
+| **Stage 5** | Built-in Demo API | **Completed** | ✅ Yes |
+| **Stage 6** | Test configuration and lifecycle | **Completed** | ✅ Yes |
 
-| **Stage 7** | Real k6 execution engine | **Pending** | ⏳ |
+| **Stage 7** | Real k6 execution engine | **Pending** | ⏳ Next |
 | **Stage 8** | Results dashboard & charts | **Pending** | ⏳ |
 | **Stage 9** | Test history & filtering | **Pending** | ⏳ |
 | **Stage 10** | Comparison and exports (CSV/JSON) | **Pending** | ⏳ |
@@ -105,10 +105,20 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Interactive Demo Sandbox UI (`DemoPage.jsx`) with live request runner, latency slider, error status dropdown, and 8-request burst traffic simulator.
 - [x] Automated backend integration tests (`demo.test.js`: 7 passing, 72 server tests passing total).
 - [x] Automated frontend component tests (`demo.test.jsx`: 4 passing, 30 client tests passing total).
-
-
-
-
+### Stage 6: Test Configuration and Lifecycle (Completed)
+- [x] TestRun Mongoose schema (`testRun.model.js`) with owner reference, immutable `targetSnapshot`, status enum (`queued`, `running`, `completed`, `failed`, `cancelled`), and compound indexes.
+- [x] Authoritative lifecycle state machine with strict invariant transitions (terminal states `completed`, `failed`, `cancelled` can never transition backwards or accept late worker mutations).
+- [x] Authoritative backend constraints via Zod (`test.validation.js`): VUs (1-50), duration (5-300s), ramp-up (< duration), endpoint relative path validation with scheme injection defense.
+- [x] Per-user concurrency limit enforcement in `test.service.js` (maximum 2 active runs concurrently to protect server resources).
+- [x] Tenant-isolated test run CRUD operations, cancel endpoint, and delete restrictions preventing deletion of active running tests.
+- [x] Controlled lifecycle simulation service and endpoint (`POST /api/tests/:id/simulate`), explicitly labeled `isSimulated: true` as required by the Master Prompt for Stage 6 validation.
+- [x] Client test service (`testService.js`) with full CRUD, cancellation, and simulated execution wrappers.
+- [x] Interactive Frontend Test Configuration Modal (`CreateTestModal.jsx`) with target selection, built-in Demo API preset filler, custom headers editor, JSON request body editor, and synchronized VU/duration/ramp-up sliders.
+- [x] Full Developer Test Dashboard (`TestRunsPage.jsx`) featuring statistics overview cards, status filtering tabs, live 3-second polling for active runs, dynamic progress bars, simulation triggers, and confirmation abort dialog.
+- [x] Automated backend unit tests (`testRun.model.test.js`: 8 passing, `test.validation.test.js`: 7 passing).
+- [x] Automated backend integration tests (`test.test.js`: 9 passing, asserting tenant isolation, cross-user denial, concurrency caps, and lifecycle state invariants: 96 server tests passing total).
+- [x] Automated frontend component tests (`tests.test.jsx`: 5 passing: 35 client tests passing total, 131 monorepo total).
+- [x] Verified zero lint warnings (`npm run lint`: 0 errors, 0 warnings across workspaces) and clean production build (`npm run build`).
 ---
 
 ## 📌 Rules for Stage Progression

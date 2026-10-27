@@ -52,26 +52,36 @@ Represents an API target authorized for load testing.
 
 ---
 
-### 2.3 TestRun Collection (`test_runs`)
-Represents a test execution lifecycle, configuration snapshot, and normalized metrics.
+### 2.3 TestRun Collection (`testruns`)
+Represents a test execution lifecycle, immutable configuration snapshot, progress, and normalized metrics.
 
 ```javascript
 {
   _id: ObjectId,
   owner: { type: ObjectId, ref: 'User', required: true, index: true },
   target: { type: ObjectId, ref: 'Target', required: true, index: true },
-  
-  // Immutable snapshot of configuration at test launch
-  configSnapshot: {
-    targetUrl: { type: String, required: true },
-    httpMethod: { type: String, enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], default: 'GET' },
-    endpointPath: { type: String, default: '/' },
-    virtualUsers: { type: Number, required: true },
-    durationSeconds: { type: Number, required: true },
-    headers: [{ key: String, value: String }]
+  name: { type: String, required: true, maxlength: 100 },
+
+  // Immutable snapshot of configuration at test creation
+  configuration: {
+    targetSnapshot: {
+      name: { type: String, required: true },
+      baseUrl: { type: String, required: true }
+    },
+    method: { type: String, enum: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], required: true },
+    endpoint: { type: String, required: true },
+    headers: { type: Map, of: String, default: {} },
+    body: { type: String, default: null },
+    vus: { type: Number, required: true, min: 1, max: 50 },
+    duration: { type: Number, required: true, min: 5, max: 300 },
+    rampUpDuration: { type: Number, default: 0 },
+    thresholds: {
+      httpReqDurationP95: { type: Number, default: null },
+      httpReqFailedRate: { type: Number, default: null }
+    }
   },
 
-  // Lifecycle status state machine
+  // Authoritative lifecycle state machine
   status: {
     type: String,
     enum: ['queued', 'running', 'completed', 'failed', 'cancelled'],
@@ -79,46 +89,53 @@ Represents a test execution lifecycle, configuration snapshot, and normalized me
     index: true
   },
 
-  // Timestamps & Execution Duration
+  // Execution Timestamps & Duration
   startTime: { type: Date, default: null },
   endTime: { type: Date, default: null },
-  durationMs: { type: Number, default: 0 },
+  actualDurationMs: { type: Number, default: null },
+
+  // Live execution progress
+  progress: {
+    percent: { type: Number, default: 0, min: 0, max: 100 },
+    stage: { type: String, default: 'Pending execution' },
+    message: { type: String, default: 'Test queued in scheduler' }
+  },
 
   // Normalized Performance Metrics Summary
   metrics: {
-    totalRequests: { type: Number, default: 0 },
-    successfulRequests: { type: Number, default: 0 },
-    failedRequests: { type: Number, default: 0 },
-    requestsPerSecond: { type: Number, default: 0 },
-    latencyAvgMs: { type: Number, default: 0 },
-    latencyMedMs: { type: Number, default: 0 },
-    latencyP90Ms: { type: Number, default: 0 },
-    latencyP95Ms: { type: Number, default: 0 },
-    latencyMaxMs: { type: Number, default: 0 },
-    httpStatusCounts: { type: Map, of: Number, default: {} },
-    failureRate: { type: Number, default: 0 }
+    totalRequests: { type: Number, default: null },
+    successfulRequests: { type: Number, default: null },
+    failedRequests: { type: Number, default: null },
+    requestsPerSecond: { type: Number, default: null },
+    avgLatency: { type: Number, default: null },
+    medianLatency: { type: Number, default: null },
+    p90Latency: { type: Number, default: null },
+    p95Latency: { type: Number, default: null },
+    maxLatency: { type: Number, default: null },
+    failureRate: { type: Number, default: null },
+    networkErrors: { type: Number, default: null },
+    statusCodeCounts: { type: Map, of: Number }
   },
 
-  // Process & Diagnostic Metadata
-  processMeta: {
-    pid: { type: Number, default: null },
-    exitCode: { type: Number, default: null },
-    rawSummaryPath: { type: String, default: null }
-  },
-
-  errorSummary: {
-    code: { type: String, default: null },
+  error: {
+    category: {
+      type: String,
+      enum: ['NONE', 'NETWORK_ERROR', 'TIMEOUT', 'CANCELLED_BY_USER', 'TARGET_UNREACHABLE', 'EXECUTION_ERROR', 'INTERNAL_ERROR'],
+      default: 'NONE'
+    },
     message: { type: String, default: null }
   },
+
+  isSimulated: { type: Boolean, default: false },
 
   createdAt: Date,
   updatedAt: Date
 }
 ```
 - **Indexes**:
-  - `{ owner: 1, createdAt: -1 }` (User run history)
-  - `{ target: 1, createdAt: -1 }` (Target-specific test history)
-  - `{ status: 1 }` (Worker reconciliation and active run lookups)
+  - `{ owner: 1, createdAt: -1 }` (User test run history)
+  - `{ status: 1, owner: 1 }` (Active concurrency lookups)
+  - `{ target: 1 }` (Target-specific test runs)
 
 ---
 

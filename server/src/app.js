@@ -11,6 +11,7 @@ import errorHandler from './middleware/errorHandler.js';
 import authRoutes from './modules/auth/auth.routes.js';
 import targetRoutes from './modules/targets/target.routes.js';
 import demoRoutes from './modules/demo/demo.routes.js';
+import testRoutes from './modules/tests/test.routes.js';
 
 
 const app = express();
@@ -63,6 +64,9 @@ app.use('/api/targets', targetRoutes);
 
 // Demo API sandbox routes (Unauthenticated benchmarks)
 app.use('/api/demo', demoRoutes);
+
+// Test execution & lifecycle management routes (Protected)
+app.use('/api/tests', testRoutes);
 
 
 

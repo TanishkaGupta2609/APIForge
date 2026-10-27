@@ -3,10 +3,7 @@ import { sendError } from '../shared/utils/response.js';
 import { RateLimitError } from '../shared/errors/AppError.js';
 import env from '../config/env.js';
 
-/**
- * Standard API rate limiter.
- * Caps requests to prevent resource exhaustion and abusive request flooding.
- */
+
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: env.NODE_ENV === 'test' ? 1000 : 200, // Generous in tests, restricted in production
@@ -18,9 +15,7 @@ export const apiLimiter = rateLimit({
   skip: () => env.NODE_ENV === 'test', // Skip in automated testing unless specifically testing rate limiter
 });
 
-/**
- * Stricter rate limiter for sensitive authentication endpoints (prevent brute-force).
- */
+
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: env.NODE_ENV === 'test' ? 1000 : 10, // 10 attempts per 15 minutes window

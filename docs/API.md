@@ -93,10 +93,12 @@ Authorization: Bearer <jwt_token>
 ### 3.4 Test Run & Execution Endpoints (Stage 6 & 7)
 | Method | Endpoint | Auth Required | Description |
 |---|---|---|---|
-| `POST` | `/api/tests/start` | Yes | Validate workload parameters and queue k6 run |
-| `GET` | `/api/tests/:id` | Yes | Get live test execution status and interim metrics |
-| `POST` | `/api/tests/:id/cancel` | Yes | Gracefully terminate an active test run (SIGTERM) |
-| `GET` | `/api/tests` | Yes | List historical test runs with filters and search |
+| `POST` | `/api/tests` | Yes | Validate workload parameters, enforce limits, and queue test run |
+| `GET` | `/api/tests` | Yes | List user's test runs with pagination (`?page=1&limit=10`) and filter (`?status=queued`) |
+| `GET` | `/api/tests/:id` | Yes | Get test run details and configuration snapshot |
+| `POST` | `/api/tests/:id/cancel` | Yes | Gracefully cancel an active or queued test run |
+| `DELETE`| `/api/tests/:id` | Yes | Delete a completed, cancelled, or failed test run |
+| `POST` | `/api/tests/:id/simulate` | Yes | Stage 6 controlled lifecycle simulation (labeled `isSimulated: true`) |
 
 ---
 
