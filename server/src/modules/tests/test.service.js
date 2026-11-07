@@ -7,6 +7,10 @@ import {
   ForbiddenError,
   ConflictError,
 } from '../../shared/errors/AppError.js';
+import processManager from '../../load-testing/processManager.js';
+import k6Runner from '../../load-testing/k6Runner.js';
+import { checkK6Installed } from '../../load-testing/k6Detector.js';
+import env from '../../config/env.js';
 
 /**
  * Creates and queues a new test run after enforcing tenant authorization,
@@ -156,12 +160,73 @@ export async function cancelTestRun(userId, testRunId, reason) {
     );
   }
 
+  // If a real child process is active for this run, terminate it immediately
+  if (processManager.isProcessRunning(testRunId)) {
+    await processManager.cancelProcess(testRunId, reason || 'Cancelled by user request');
+  }
+
   testRun.transitionTo(TEST_RUN_STATUS.CANCELLED, {
     reason: reason || 'Test run cancelled by user request',
   });
 
   await testRun.save();
   return testRun.toJSON();
+}
+
+/**
+ * Starts real k6 load test execution for a queued TestRun.
+ *
+ * @param {string} userId - Authenticated user ID
+ * @param {string} testRunId - Test run ID
+ * @returns {Promise<object>} TestRun with initial executing state
+ */
+export async function startRealTestRun(userId, testRunId) {
+  const testRun = await TestRun.findById(testRunId);
+
+  if (!testRun) {
+    throw new NotFoundError('Test run not found.');
+  }
+
+  if (testRun.owner.toString() !== userId.toString()) {
+    throw new ForbiddenError('You do not have permission to execute this test run.');
+  }
+
+  if (testRun.status !== TEST_RUN_STATUS.QUEUED) {
+    throw new BadRequestError(
+      `Only queued test runs can be started. Current status is '${testRun.status}'.`
+    );
+  }
+
+  // Check global worker capacity
+  if (processManager.getActiveProcessCount() >= env.MAX_CONCURRENT_TESTS) {
+    throw new ConflictError(
+      `Worker capacity reached: ${processManager.getActiveProcessCount()} active test(s) running. Maximum concurrency limit is ${env.MAX_CONCURRENT_TESTS}.`
+    );
+  }
+
+  // Launch real k6 execution in background
+  k6Runner.startTestExecution(String(testRun._id));
+
+  // Return the queued or transitioning test run
+  return testRun.toJSON();
+}
+
+/**
+ * Retrieves the diagnostic readiness status of the k6 load testing engine.
+ *
+ * @returns {Promise<object>}
+ */
+export async function getEngineStatus() {
+  const check = await checkK6Installed();
+  return {
+    engine: 'k6',
+    available: check.available,
+    version: check.version,
+    path: check.path,
+    error: check.error,
+    activeProcesses: processManager.getActiveProcessCount(),
+    maxConcurrent: env.MAX_CONCURRENT_TESTS,
+  };
 }
 
 /**

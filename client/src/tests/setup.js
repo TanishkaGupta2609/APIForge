@@ -7,6 +7,15 @@ if (typeof window !== 'undefined') {
   window.AbortSignal = globalThis.AbortSignal;
 }
 
+// Mock ResizeObserver for Recharts ResponsiveContainer in jsdom
+if (typeof globalThis !== 'undefined') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
 
 // Mock apiClient default GET responses for health check in tests
 vi.mock('../services/apiClient.js', async (importOriginal) => {

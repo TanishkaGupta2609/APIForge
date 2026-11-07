@@ -27,11 +27,24 @@ router.get(
   testController.listTestRuns
 );
 
+// Diagnostic status of k6 load-testing engine (placed before /:id)
+router.get(
+  '/engine/status',
+  testController.getEngineStatus
+);
+
 // Get specific test run details
 router.get(
   '/:id',
   validateRequest(testIdParamSchema),
   testController.getTestRunById
+);
+
+// Start real k6 load test execution
+router.post(
+  '/:id/start',
+  validateRequest(testIdParamSchema),
+  testController.startTestRun
 );
 
 // Cancel an active or queued test run
@@ -53,6 +66,13 @@ router.post(
   '/:id/simulate',
   validateRequest(testIdParamSchema),
   testController.simulateLifecycleRun
+);
+
+// Safe rerun of an existing test run
+router.post(
+  '/:id/rerun',
+  validateRequest(testIdParamSchema),
+  testController.rerunTestRun
 );
 
 export default router;

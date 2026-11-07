@@ -12,6 +12,7 @@ import {
   Activity,
   Shield,
   Layers,
+  BarChart2,
 } from 'lucide-react';
 import { DashboardShell } from '../../components/layout/DashboardShell.jsx';
 import { Card } from '../../components/ui/Card.jsx';
@@ -34,10 +35,19 @@ export function TestRunsPage() {
   const [cancelReason, setCancelReason] = useState('Aborted by user via dashboard');
   const [isCancelling, setIsCancelling] = useState(false);
 
+  // Engine status
+  const [engineStatus, setEngineStatus] = useState(null);
+
   // Action feedback
   const [actionFeedback, setActionFeedback] = useState(null);
 
   const pollingRef = useRef(null);
+
+  useEffect(() => {
+    testService.getEngineStatus().then((res) => {
+      setEngineStatus(res);
+    }).catch(() => {});
+  }, []);
 
   const fetchTests = useCallback(async (isPolling = false) => {
     if (!isPolling) setIsLoading(true);
@@ -81,6 +91,22 @@ export function TestRunsPage() {
       message: `Test run "${newRun.name}" successfully created and placed in queue!`,
     });
     fetchTests();
+  };
+
+  const handleStartRun = async (runId, runName) => {
+    try {
+      await testService.startTestRun(runId);
+      setActionFeedback({
+        type: 'success',
+        message: `k6 engine launched for "${runName}"! Generating synthetic load...`,
+      });
+      fetchTests();
+    } catch (err) {
+      setActionFeedback({
+        type: 'danger',
+        message: err?.message || 'Failed to start k6 execution.',
+      });
+    }
   };
 
   const handleSimulateRun = async (runId, runName) => {
@@ -212,7 +238,7 @@ export function TestRunsPage() {
         )}
 
         {/* Authoritative Safety Constraints Notice */}
-        <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-300 flex items-start justify-between gap-3">
+        <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-300 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
           <div className="flex items-start gap-2.5">
             <Shield className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
             <div>
@@ -222,9 +248,18 @@ export function TestRunsPage() {
               Max 50 Virtual Users (VUs) and 300s duration are enforced server-side. Users are capped at 2 concurrent active executions to ensure server stability.
             </div>
           </div>
-          <span className="hidden md:inline-flex items-center gap-1 font-mono text-[11px] text-slate-400 shrink-0">
-            <Layers className="h-3.5 w-3.5 text-slate-500" /> Monitored Workers
-          </span>
+          {engineStatus?.available ? (
+            <div className="inline-flex items-center gap-2 font-mono text-[11px] px-2.5 py-1 rounded-md bg-emerald-950/50 border border-emerald-800/60 text-emerald-300 shrink-0">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+              <span>k6 Engine: {engineStatus.version}</span>
+              <span className="text-slate-500">|</span>
+              <span className="text-slate-400">{engineStatus.activeProcesses}/{engineStatus.maxConcurrent} active</span>
+            </div>
+          ) : (
+            <span className="hidden md:inline-flex items-center gap-1 font-mono text-[11px] text-slate-400 shrink-0">
+              <Layers className="h-3.5 w-3.5 text-slate-500" /> Monitored Workers
+            </span>
+          )}
         </div>
 
         {/* Statistics Metric Cards */}
@@ -328,6 +363,11 @@ export function TestRunsPage() {
                             Stage 6 Simulation
                           </span>
                         )}
+                        {!run.isSimulated && isCompleted && (
+                          <span className="text-[10px] font-mono uppercase bg-emerald-950/70 text-emerald-300 border border-emerald-800/60 rounded px-1.5 py-0.5">
+                            Real k6 Engine
+                          </span>
+                        )}
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
@@ -424,6 +464,19 @@ export function TestRunsPage() {
                     </span>
 
                     <div className="flex items-center gap-2">
+                      {/* Real k6 Engine Execution Trigger (Stage 7) */}
+                      {isQueued && (
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => handleStartRun(runId, run.name)}
+                          leftIcon={<Play className="h-3 w-3 fill-current" />}
+                          className="text-xs py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-medium"
+                        >
+                          Start k6 Run
+                        </Button>
+                      )}
+
                       {/* Stage 6 Lifecycle Simulation Trigger */}
                       {isQueued && (
                         <Button
@@ -433,7 +486,20 @@ export function TestRunsPage() {
                           leftIcon={<Activity className="h-3 w-3 text-indigo-400" />}
                           className="text-xs py-1"
                         >
-                          Simulate Lifecycle Run
+                          Simulate
+                        </Button>
+                      )}
+
+                      {/* View Results Button */}
+                      {(isCompleted || isCancelled || isFailed) && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          to={`/results/${runId}`}
+                          leftIcon={<BarChart2 className="h-3 w-3 text-indigo-400" />}
+                          className="text-xs py-1 text-indigo-300 hover:text-white"
+                        >
+                          View Results
                         </Button>
                       )}
 

@@ -5,6 +5,8 @@ import TargetsPage from '../features/targets/TargetsPage.jsx';
 import TestRunsPage from '../features/tests/TestRunsPage.jsx';
 import HistoryPage from '../features/history/HistoryPage.jsx';
 import DemoPage from '../features/demo/DemoPage.jsx';
+import ResultsPage from '../features/results/ResultsPage.jsx';
+import ComparePage from '../features/results/ComparePage.jsx';
 import LoginPage from '../features/auth/LoginPage.jsx';
 import RegisterPage from '../features/auth/RegisterPage.jsx';
 import NotFoundPage from '../features/NotFoundPage.jsx';
@@ -25,6 +27,14 @@ export const routes = [
   {
     path: '/tests',
     element: <TestRunsPage />,
+  },
+  {
+    path: '/results/:runId',
+    element: <ResultsPage />,
+  },
+  {
+    path: '/compare',
+    element: <ComparePage />,
   },
   {
     path: '/history',

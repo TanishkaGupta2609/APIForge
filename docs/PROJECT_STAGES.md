@@ -15,12 +15,12 @@ This document tracks the progress of the staged implementation plan defined in `
 | **Stage 4** | Target management | **Completed** | ✅ Yes |
 | **Stage 5** | Built-in Demo API | **Completed** | ✅ Yes |
 | **Stage 6** | Test configuration and lifecycle | **Completed** | ✅ Yes |
+| **Stage 7** | Real k6 execution engine | **Completed** | ✅ Yes |
+| **Stage 8** | Results dashboard & charts | **Completed** | ✅ Yes |
+| **Stage 9** | Test history & filtering | **Completed** | ✅ Yes |
+| **Stage 10** | Comparison and exports (CSV/JSON) | **Completed** | ✅ Yes |
 
-| **Stage 7** | Real k6 execution engine | **Pending** | ⏳ Next |
-| **Stage 8** | Results dashboard & charts | **Pending** | ⏳ |
-| **Stage 9** | Test history & filtering | **Pending** | ⏳ |
-| **Stage 10** | Comparison and exports (CSV/JSON) | **Pending** | ⏳ |
-| **Stage 11** | Security and reliability hardening | **Pending** | ⏳ |
+| **Stage 11** | Security and reliability hardening | **Pending** | ⏳ Next |
 | **Stage 12** | Advanced features | **Pending** | ⏳ |
 | **Stage 13** | Final verification and presentation | **Pending** | ⏳ |
 
@@ -119,6 +119,86 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Automated backend integration tests (`test.test.js`: 9 passing, asserting tenant isolation, cross-user denial, concurrency caps, and lifecycle state invariants: 96 server tests passing total).
 - [x] Automated frontend component tests (`tests.test.jsx`: 5 passing: 35 client tests passing total, 131 monorepo total).
 - [x] Verified zero lint warnings (`npm run lint`: 0 errors, 0 warnings across workspaces) and clean production build (`npm run build`).
+
+### Stage 7: Real k6 Execution Engine (Completed)
+- [x] k6 executable detector module (`k6Detector.js`) supporting explicit env path (`K6_PATH`), project local binaries (`server/bin/k6.exe`, `bin/k6.exe`), and system PATH.
+- [x] Script generator module (`scriptBuilder.js`) producing valid ES6 k6 test scripts with safe options, thresholds, ramp-up stages, and headers.
+- [x] Strict script-injection prevention: All dynamic inputs (URL, headers, body, method) are serialized via `JSON.stringify()`, guaranteeing user input cannot break out of literals or execute arbitrary JavaScript.
+- [x] k6 summary metrics parser (`summaryParser.js`) mapping raw k6 JSON outputs into stable normalized schema: `totalRequests`, `successfulRequests`, `failedRequests`, `requestsPerSecond`, `avgLatency`, `medianLatency`, `p90Latency`, `p95Latency`, `maxLatency`, `failureRate`, `networkErrors`, and `statusCodeCounts`.
+- [x] Controlled child-process manager (`processManager.js`) using Node.js `spawn` with argument array (never shell string concatenation), diagnostic stream capture with secret redaction, hard timeouts, and cross-platform process tree termination.
+- [x] k6 runner orchestrator (`k6Runner.js`) managing temporary directories, script generation, real-time database progress updates, result parsing, and directory cleanup.
+- [x] Interrupted run reconciler (`reconciler.js`) running on server boot to identify any orphaned tests left in `running` or `queued` status after server restart and mark them as `failed` (`INTERNAL_ERROR`).
+- [x] Engine diagnostic API endpoint (`GET /api/tests/engine/status`) exposing k6 readiness, version, active process count, and concurrency limits.
+- [x] Test execution endpoint (`POST /api/tests/:id/start`) launching background worker process and updating lifecycle.
+- [x] Enhanced cancellation handling (`POST /api/tests/:id/cancel`) terminating active k6 worker processes across operating systems.
+- [x] Frontend test service methods (`startTestRun`, `getEngineStatus`) and updated TestRuns UI with engine readiness badge, primary "Start k6 Run" action, and real vs. simulated badges.
+- [x] Automated unit tests (`k6Detector.test.js`: 4 passing, `scriptBuilder.test.js`: 13 passing, `summaryParser.test.js`: 6 passing, `processManager.test.js`: 6 passing).
+- [x] Automated integration tests (`k6Execution.test.js`: 5 passing, verifying real k6 workload against demo API, target unreachable behavior, cancellation termination, and server restart reconciliation: 130 server tests passing total).
+- [x] Automated frontend component tests (`tests.test.jsx`: 6 passing: 36 client tests passing total, 166 monorepo total).
+- [x] Verified zero lint warnings (`npm run lint`: 0 errors, 0 warnings across workspaces) and clean production build (`npm run build`).
+
+### Stage 8: Results Dashboard & Charts (Completed)
+- [x] Standardized Results API endpoints (`GET /api/results/:runId`, `GET /api/results/dashboard/summary`) with Zod parameter validation (`runIdParamSchema`).
+- [x] Results service (`results.service.js`) with data aggregators: `buildPercentilesBreakdown`, `buildStatusCodeDistribution`, `buildWorkloadTimeline`, and `evaluateThresholds`.
+- [x] Strict tenant isolation enforcing that users can only view results of their own test runs (404/403 on foreign/missing runs).
+- [x] Dashboard summary aggregator computing aggregate metrics across all user tests (total runs, total requests, avg latency, avg error rate, throughput, and recent runs).
+- [x] 6 Core Performance Metric Cards: Total Requests, Success Rate %, Average Latency, Median (p50) Latency, 95th Percentile Latency (p95), and Peak Virtual Users.
+- [x] 3 Interactive Recharts Visualizations:
+  - `LatencyDistributionChart.jsx`: Horizontal/vertical bar chart comparing Min, Med, Avg, p90, p95, and Max response times.
+  - `StatusCodePieChart.jsx`: Donut/pie chart breaking down HTTP 2xx success vs. 4xx/5xx error distribution with custom color palette.
+  - `ThroughputTimelineChart.jsx`: Area chart with dual Y-axes displaying Throughput (req/s) and Virtual Users over test elapsed time.
+- [x] SLA Threshold Verification Panel evaluating latency limits (e.g. p95 < 500ms) and failure rates (< 1%) with passing/breached badges.
+- [x] Raw Results JSON Inspector modal/accordion for deep diagnostic inspection.
+- [x] Dedicated Results Page (`ResultsPage.jsx`) at `/results/:runId` with live progress banner, error diagnostics banner, and rerun/action links.
+- [x] Dashboard Page (`DashboardPage.jsx`) integration displaying platform summary metrics and recent test run history cards.
+- [x] Automated unit tests (`results.service.test.js`: 9 passing).
+- [x] Automated backend integration tests (`results.test.js`: 7 passing, 146 server tests passing total).
+- [x] Automated frontend component tests (`results.test.jsx`: 3 passing, 39 client tests passing total).
+- [x] Monorepo verification: 32 test files, 185 tests passing with 0 failures, 0 ESLint warnings, and clean production build.
+
+### Stage 9: Test History & Filtering (Completed)
+- [x] Backend test history service (`history.service.js`) with multi-field search and filters: status, target, date boundaries, and sort criteria.
+- [x] Safe regular expression escaping utility (`escapeRegex`) preventing ReDoS attacks on user search queries.
+- [x] Strict tenant isolation scoping all history queries and count operations to `owner: userId`.
+- [x] Standardized History API endpoints (`GET /api/history`, `GET /api/history/stats`, `POST /api/history/:id/rerun`, `DELETE /api/history/:id`) with Zod query and parameter validation (`history.validation.js`).
+- [x] Safe test rerun implementation (`rerunTest`): re-validates target existence and ownership, enforces user concurrency limit (max 2 active runs), creates new test run in `queued` status with configuration snapshot and fresh progress state.
+- [x] History item deletion with status check preventing deletion of actively running tests.
+- [x] Client history service (`historyService.js`) handling paginated queries, status statistics, reruns, and deletions.
+- [x] Full Developer Test History Dashboard (`HistoryPage.jsx`) featuring:
+  - Header statistics cards (Total, Completed, Failed, Cancelled executions).
+  - Search input with clear button and debounced query execution.
+  - Multi-parameter filter toolbar: Status filter dropdown, Target API dropdown, and Date range selector (`All Time`, `24h`, `7d`, `30d`).
+  - Sort order dropdown (Newest, Oldest, Name A-Z, Name Z-A, Duration, VUs).
+  - Comprehensive history table with color-coded status badges, test names, target endpoints, workload profiles, normalized metrics, and formatted timestamps.
+  - Quick action controls: "View Results" link, "Safe Re-run" trigger with configuration confirmation modal, and "Delete" with alert modal.
+  - Pagination controls with per-page selector (5, 10, 25, 50), page indicator, and Previous/Next buttons.
+  - Empty state with clear filters button and link to configure new tests.
+- [x] Automated unit tests (`history.service.test.js`: 12 passing).
+- [x] Automated backend integration tests (`history.test.js`: 14 passing, asserting unauthenticated denial, cross-user tenant isolation, filters, rerun cloning, target deletion handling, and running test deletion protection).
+- [x] Automated frontend component tests (`history.test.jsx`: 4 passing, verifying overview rendering, search filtering, rerun flow, and empty states).
+
+### Stage 10: Comparison and Exports (CSV/JSON) (Completed)
+- [x] Sensitive header and credential redaction utility (`redactSensitiveHeaders`) preventing leakage of Authorization bearer tokens, passwords, cookies, and API keys during exports.
+- [x] Standardized Export API endpoint (`GET /api/results/:runId/export?format=json|csv`) enforcing tenant ownership authorization and delivering downloadable attachment streams.
+- [x] Comprehensive JSON exporter producing structured reports with test configuration, sanitized headers, normalized metrics, and SLA threshold evaluations.
+- [x] Spreadsheet-compatible CSV exporter with sections for test metadata, metric definitions with units, and HTTP status code distribution.
+- [x] Comparative Analysis API endpoint (`GET /api/results/compare?baseRunId=<id>&compareRunId=<id>`) with Zod query validation (`compareQuerySchema`) preventing identical run comparisons.
+- [x] Side-by-side comparative engine (`compareTestRuns`):
+  - Workload compatibility rating (`HIGH`, `MODERATE`, `LOW`) evaluating target URLs, endpoints, methods, and concurrency.
+  - Directional delta calculations (`calculateDelta`) distinguishing performance improvements (latency reduction, throughput increase) from regressions.
+  - Automated textual verdict summarizer highlighting throughput and latency variance.
+- [x] Client result service methods (`compareRuns`, `exportResult`) with browser blob download triggers.
+- [x] Dedicated Comparison Page (`ComparePage.jsx`) mounted at `/compare`:
+  - Baseline and comparison run selectors populated dynamically from completed runs.
+  - Interactive swap button to flip baseline and comparison runs.
+  - Compatibility badge and explanatory diagnostic notes.
+  - Side-by-side configuration profile cards.
+  - Performance delta cards grid with color-coded trend pills (green improvement / red regression).
+  - Recharts comparative BarChart displaying latency percentiles (Min, Med, Avg, p90, p95, Max).
+- [x] Action button integrations in `ResultsPage.jsx` ("Compare", "Export CSV", "Export JSON") and `HistoryPage.jsx` ("Compare Run").
+- [x] Automated unit tests (`results.service.test.js`: 22 passing).
+- [x] Automated backend integration tests (`results.test.js`: 13 passing, verifying JSON export with header redaction, CSV export formatting, unauthorized export blocking, and side-by-side run comparisons).
+- [x] Automated frontend component tests (`compare.test.jsx`: 3 passing, verifying selector changes, swap handling, delta rendering, and empty state).
 ---
 
 ## 📌 Rules for Stage Progression

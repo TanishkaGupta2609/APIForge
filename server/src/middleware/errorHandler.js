@@ -8,10 +8,6 @@ import {
 } from '../shared/errors/AppError.js';
 import env from '../config/env.js';
 
-/**
- * Global error handling middleware.
- * Catches all operational and unexpected errors, serializing them into standard JSON envelopes.
- */
 export function errorHandler(err, req, res, _next) {
   // If headers already sent, delegate to default Express handler
   if (res.headersSent) {

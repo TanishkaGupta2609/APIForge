@@ -113,7 +113,66 @@ describe('Frontend TestRunsPage Component & Lifecycle Integration', () => {
     expect(screen.getByRole('button', { name: /fill demo preset/i })).toBeInTheDocument();
   });
 
-  it('triggers simulation execution when Simulate Lifecycle Run is clicked on queued run', async () => {
+  it('triggers real k6 execution when Start k6 Run is clicked on queued run', async () => {
+    vi.spyOn(testService, 'getEngineStatus').mockResolvedValueOnce({
+      available: true,
+      version: 'v2.3.0',
+      activeProcesses: 0,
+      maxConcurrent: 2,
+    });
+
+    vi.spyOn(testService, 'getTestRuns').mockResolvedValueOnce({
+      testRuns: [
+        {
+          _id: 'r_k6',
+          name: 'Stage 7 Real k6 Run',
+          status: 'queued',
+          configuration: {
+            method: 'GET',
+            endpoint: '/api/demo/ping',
+            vus: 5,
+            duration: 10,
+            rampUpDuration: 0,
+            targetSnapshot: { name: 'Demo API', baseUrl: 'http://localhost:5001' },
+          },
+          progress: { percent: 0, stage: 'Queued', message: 'Test scheduled' },
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      pagination: { total: 1 },
+    });
+
+    const startSpy = vi.spyOn(testService, 'startTestRun').mockResolvedValueOnce({
+      _id: 'r_k6',
+      status: 'queued',
+    });
+
+    render(
+      <AuthProvider>
+        <MemoryRouter>
+          <TestRunsPage />
+        </MemoryRouter>
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Stage 7 Real k6 Run')).toBeInTheDocument();
+    });
+
+    const startBtn = screen.getByRole('button', { name: /start k6 run/i });
+    fireEvent.click(startBtn);
+
+    expect(startSpy).toHaveBeenCalledWith('r_k6');
+  });
+
+  it('triggers simulation execution when Simulate is clicked on queued run', async () => {
+    vi.spyOn(testService, 'getEngineStatus').mockResolvedValueOnce({
+      available: true,
+      version: 'v2.3.0',
+      activeProcesses: 0,
+      maxConcurrent: 2,
+    });
+
     vi.spyOn(testService, 'getTestRuns').mockResolvedValueOnce({
       testRuns: [
         {
@@ -153,7 +212,7 @@ describe('Frontend TestRunsPage Component & Lifecycle Integration', () => {
       expect(screen.getByText('Stage 6 Lifecycle Verify')).toBeInTheDocument();
     });
 
-    const simBtn = screen.getByRole('button', { name: /simulate lifecycle run/i });
+    const simBtn = screen.getByRole('button', { name: /^simulate$/i });
     fireEvent.click(simBtn);
 
     expect(simSpy).toHaveBeenCalledWith('r_sim');

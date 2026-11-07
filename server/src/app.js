@@ -12,6 +12,8 @@ import authRoutes from './modules/auth/auth.routes.js';
 import targetRoutes from './modules/targets/target.routes.js';
 import demoRoutes from './modules/demo/demo.routes.js';
 import testRoutes from './modules/tests/test.routes.js';
+import resultsRoutes from './modules/results/results.routes.js';
+import historyRoutes from './modules/history/history.routes.js';
 
 
 const app = express();
@@ -67,6 +69,12 @@ app.use('/api/demo', demoRoutes);
 
 // Test execution & lifecycle management routes (Protected)
 app.use('/api/tests', testRoutes);
+
+// Results & performance metrics analytics routes (Protected)
+app.use('/api/results', resultsRoutes);
+
+// Test execution history, search, and filtering routes (Protected)
+app.use('/api/history', historyRoutes);
 
 
 

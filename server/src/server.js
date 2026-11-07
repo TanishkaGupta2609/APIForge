@@ -2,14 +2,20 @@ import app from './app.js';
 import demoApp from './demoApp.js';
 import env from './config/env.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
+import { reconcileInterruptedRuns } from './load-testing/reconciler.js';
+import { cleanupAllProcesses } from './load-testing/processManager.js';
 
 const PORT = env.PORT || 5000;
 const DEMO_PORT = env.DEMO_PORT || 5001;
 
-// Attempt database connection on startup
-connectDatabase().catch((err) => {
-  console.warn(`[APIForge Server] Starting server in offline/disconnected database mode: ${err.message}`);
-});
+// Attempt database connection on startup and reconcile interrupted runs
+connectDatabase()
+  .then(async () => {
+    await reconcileInterruptedRuns();
+  })
+  .catch((err) => {
+    console.warn(`[APIForge Server] Starting server in offline/disconnected database mode: ${err.message}`);
+  });
 
 const server = app.listen(PORT, () => {
   console.log(`[APIForge Server] Listening on http://localhost:${PORT} in ${env.NODE_ENV} mode`);
@@ -22,6 +28,8 @@ const demoServer = demoApp.listen(DEMO_PORT, () => {
 // Graceful shutdown handling
 const handleShutdown = async (signal) => {
   console.log(`\n[APIForge Server] Received ${signal}. Closing HTTP servers gracefully...`);
+
+  await cleanupAllProcesses();
 
   demoServer.close(() => {
     console.log('[APIForge Demo] Sandbox HTTP server closed.');

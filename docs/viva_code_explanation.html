@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>APIForge — Comprehensive Codebase Explanation & Viva Voce Defense Guide</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 16mm 14mm 16mm 14mm;
+      @bottom-right {
+        content: counter(page);
+        font-size: 8.5pt;
+        color: #64748b;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      @bottom-left {
+        content: "APIForge — Codebase Viva & Technical Defense Guide";
+        font-size: 8.5pt;
+        color: #64748b;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      line-height: 1.5;
+      font-size: 10pt;
+      margin: 0;
+      padding: 0;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+    .avoid-break {
+      page-break-inside: avoid;
+    }
+
+    /* Cover Page */
+    .cover {
+      min-height: 250mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px 20px 20px 20px;
+      page-break-after: always;
+    }
+    .cover-tag {
+      display: inline-block;
+      background: #4f46e5;
+      color: #ffffff;
+      font-size: 9pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .cover-title {
+      font-size: 28pt;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.15;
+      margin: 0 0 12px 0;
+    }
+    .cover-subtitle {
+      font-size: 14pt;
+      color: #475569;
+      line-height: 1.4;
+      margin: 0 0 24px 0;
+      font-weight: 500;
+    }
+    .cover-meta {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 5px solid #4f46e5;
+      border-radius: 8px;
+      padding: 18px 24px;
+      margin-top: 30px;
+    }
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px 24px;
+      font-size: 9.5pt;
+    }
+    .cover-grid strong {
+      color: #0f172a;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 {
+      color: #0f172a;
+      font-weight: 700;
+      page-break-after: avoid;
+    }
+    h1 {
+      font-size: 18pt;
+      border-bottom: 2.5px solid #4f46e5;
+      padding-bottom: 6px;
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+    h2 {
+      font-size: 13pt;
+      border-bottom: 1.5px solid #cbd5e1;
+      padding-bottom: 4px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #1e1b4b;
+    }
+    h3 {
+      font-size: 11pt;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    p {
+      margin-top: 0;
+      margin-bottom: 8px;
+      text-align: justify;
+    }
+    ul, ol {
+      margin-top: 0;
+      margin-bottom: 8px;
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 3px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 7.5pt;
+      font-weight: 700;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-primary { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+    .badge-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge-danger  { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .badge-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .badge-dark    { background: #1e293b; color: #f8fafc; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 14px 0;
+      font-size: 8.5pt;
+      page-break-inside: avoid;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 5px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+    td code {
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 8pt;
+      background: #e2e8f0;
+      padding: 1px 4px;
+      border-radius: 3px;
+      color: #0f172a;
+    }
+
+    /* Callouts */
+    .callout {
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin: 10px 0 14px 0;
+      font-size: 9pt;
+      page-break-inside: avoid;
+    }
+    .callout-viva {
+      background: #f5f3ff;
+      border-left: 4px solid #7c3aed;
+      color: #4c1d95;
+    }
+    .callout-viva strong {
+      color: #5b21b6;
+      display: block;
+      margin-bottom: 3px;
+      font-size: 9.5pt;
+    }
+    .callout-security {
+      background: #fff1f2;
+      border-left: 4px solid #e11d48;
+      color: #881337;
+    }
+    .callout-security strong {
+      color: #9f1239;
+      display: block;
+      margin-bottom: 3px;
+      font-size: 9.5pt;
+    }
+    .callout-info {
+      background: #f0f9ff;
+      border-left: 4px solid #0284c7;
+      color: #0369a1;
+    }
+    .callout-info strong {
+      color: #075985;
+      display: block;
+      margin-bottom: 3px;
+      font-size: 9.5pt;
+    }
+
+    /* Code Blocks */
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 8pt;
+      line-height: 1.45;
+      overflow-x: auto;
+      margin: 8px 0 12px 0;
+      page-break-inside: avoid;
+    }
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .kw { color: #f43f5e; font-weight: bold; } /* keyword */
+    .fn { color: #38bdf8; }                   /* function */
+    .str { color: #a3e635; }                  /* string */
+    .com { color: #64748b; font-style: italic; } /* comment */
+    .num { color: #fb923c; }                  /* number */
+
+    /* Q&A styling */
+    .qa-item {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      page-break-inside: avoid;
+    }
+    .qa-question {
+      font-weight: 700;
+      color: #1e1b4b;
+      font-size: 9.5pt;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .qa-badge {
+      background: #4f46e5;
+      color: #fff;
+      font-size: 7pt;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+    .qa-answer {
+      font-size: 9pt;
+      color: #334155;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== COVER PAGE ==================== -->
+  <div class="cover">
+    <div>
+      <span class="cover-tag">Final Year Capstone Project Defense</span>
+      <h1 class="cover-title">APIFORGE</h1>
+      <div class="cover-subtitle">Advanced API Load-Testing & Performance-Analysis Platform</div>
+      <p style="font-size: 11pt; color: #475569; max-width: 650px;">
+        <strong>Comprehensive Codebase & Viva Voce Defense Guide:</strong> An exhaustive, file-by-file, line-by-line examination of the architecture, technical choices, security fortifications, design patterns, and examiner questions.
+      </p>
+    </div>
+
+    <div class="cover-meta">
+      <div class="cover-grid">
+        <div><strong>Project Title:</strong> APIForge Monorepo Platform</div>
+        <div><strong>Technology Stack:</strong> Node.js, Express, React 18, Vite, MongoDB, k6</div>
+        <div><strong>Architecture:</strong> Modular Monolith, Dual HTTP Servers, SPA</div>
+        <div><strong>Security Protections:</strong> Multi-layer SSRF, JWT, Bcrypt, Helmet, CORS, Zod</div>
+        <div><strong>Verification Status:</strong> 131/131 Tests Passing (Unit & Integration)</div>
+        <div><strong>Document Purpose:</strong> Viva Defense, Code Walkthrough & Oral Examination</div>
+      </div>
+    </div>
+
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; display: flex; justify-content: space-between; font-size: 8.5pt; color: #64748b;">
+      <span>Academic Year 2026</span>
+      <span>Confidential & Proprietary Project Documentation</span>
+    </div>
+  </div>
+
+  <!-- ==================== TABLE OF CONTENTS ==================== -->
+  <div class="avoid-break" style="margin-bottom: 24px;">
+    <h1>Table of Contents</h1>
+    <table style="font-size: 9pt;">
+      <thead>
+        <tr>
+          <th style="width: 15%;">Section</th>
+          <th style="width: 65%;">Topic & Core Modules</th>
+          <th style="width: 20%;">Focus Area</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Section 1</strong></td>
+          <td><strong>Project Overview & High-Level System Architecture</strong></td>
+          <td>System Design & Tech Justification</td>
+        </tr>
+        <tr>
+          <td><strong>Section 2</strong></td>
+          <td><strong>Technology Stack: Deep Justifications & Alternatives</strong></td>
+          <td>Why React+Vite, Express, Mongo, k6</td>
+        </tr>
+        <tr>
+          <td><strong>Section 3</strong></td>
+          <td><strong>Backend Core & Server Infrastructure</strong> (server.js, app.js, demoApp.js)</td>
+          <td>Dual Servers, Graceful Shutdown, Pipelines</td>
+        </tr>
+        <tr>
+          <td><strong>Section 4</strong></td>
+          <td><strong>Configuration & Database Layer</strong> (env.js, database.js)</td>
+          <td>Zod Validation, Connection Pooling, Events</td>
+        </tr>
+        <tr>
+          <td><strong>Section 5</strong></td>
+          <td><strong>Middleware Pipeline & Security Architecture</strong></td>
+          <td>Error Handling, Auth, Zod Validation, Rate Limits</td>
+        </tr>
+        <tr>
+          <td><strong>Section 6</strong></td>
+          <td><strong>SSRF Defense & Security Utilities</strong> (ssrfFilter.js, response.js, AppError.js)</td>
+          <td>DNS Rebinding, Cloud Metadata, OOP Errors</td>
+        </tr>
+        <tr>
+          <td><strong>Section 7</strong></td>
+          <td><strong>Authentication & Authorization Module</strong> (user.model.js, jwt.service.js, auth.service.js)</td>
+          <td>Bcrypt Salts, JWT Claims, select:false</td>
+        </tr>
+        <tr>
+          <td><strong>Section 8</strong></td>
+          <td><strong>Target API Management Module</strong> (target.model.js, target.service.js)</td>
+          <td>SSRF Preflights, AbortController Health Probes</td>
+        </tr>
+        <tr>
+          <td><strong>Section 9</strong></td>
+          <td><strong>Isolated Built-in Demo Sandbox</strong> (demoApp.js, demo.controller.js)</td>
+          <td>Port 5001, Latency, Error & Rate Injection</td>
+        </tr>
+        <tr>
+          <td><strong>Section 10</strong></td>
+          <td><strong>Test Configuration & Finite State Machine Engine</strong> (testRun.model.js, test.service.js)</td>
+          <td>FSM Transitions, Invariants, Concurrency Limits</td>
+        </tr>
+        <tr>
+          <td><strong>Section 11</strong></td>
+          <td><strong>Frontend Architecture & React 18 Implementation</strong></td>
+          <td>Axios Interceptors, Context, Polling Engine</td>
+        </tr>
+        <tr>
+          <td><strong>Section 12</strong></td>
+          <td><strong>Load Testing & Performance Metrics Formulations</strong></td>
+          <td>VUs, RPS, P90/P95 Percentiles vs Averages</td>
+        </tr>
+        <tr>
+          <td><strong>Section 13</strong></td>
+          <td><strong>Testing Strategy & Verification Framework</strong></td>
+          <td>Vitest, Supertest, React Testing Library</td>
+        </tr>
+        <tr>
+          <td><strong>Section 14</strong></td>
+          <td><strong>Top 50 Viva Examiner Questions & High-Scoring Answers</strong></td>
+          <td>Oral Examination Rapid-Fire Q&A</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 1 ==================== -->
+  <h1>Section 1: Project Overview & High-Level Architecture</h1>
+
+  <h2>1.1 What is APIForge?</h2>
+  <p>
+    <strong>APIForge</strong> is a high-performance, developer-centric API load-testing and performance-analysis platform. It allows software engineers and DevOps teams to define target endpoints, configure virtual user (VU) traffic profiles, execute real load tests, monitor execution in real time, extract normalized latency distributions (Average, Median, P90, P95, Max), and compare benchmark runs.
+  </p>
+
+  <h2>1.2 The Problem It Solves</h2>
+  <p>
+    Existing commercial load-testing platforms (such as Postman Enterprise, BlazeMeter, or Datadog Synthetic Monitoring) are either expensive, closed-source, or introduce heavy cloud latency and data-residency concerns. On the other hand, raw CLI tools like <code>k6</code> or <code>wrk</code> lack persistent test history, real-time visual dashboards, tenant isolation, team collaboration, and automated SSRF security defenses. APIForge bridges this gap with an intuitive, self-hosted full-stack platform.
+  </p>
+
+  <div class="callout callout-info">
+    <strong>Architecture Blueprint: Decoupled Dual-HTTP Server Topology</strong>
+    <p>APIForge runs two independent HTTP servers within a single Node.js runtime process:</p>
+    <ul>
+      <li><strong>Port 5000 (Main Management API):</strong> Handles authentication, target management, test scheduling, result persistence, and metrics aggregation. Protected by strict JWT authentication, CORS, and rate-limiting.</li>
+      <li><strong>Port 5001 (Isolated Demo Sandbox API):</strong> An unauthenticated, zero-interference benchmarking target offering instant ping, configurable latency injection (0–5000ms), probabilistic HTTP error injection (400–504), and sliding-window rate-limiting.</li>
+    </ul>
+  </div>
+
+  <div class="callout callout-viva">
+    <strong>Top Viva Question: Why run a separate Demo Server on Port 5001 instead of mounting it on Port 5000?</strong>
+    <p><em>Answer:</em> If the load testing engine fired hundreds of concurrent Virtual Users (VUs) directly at Port 5000, it would saturate the Node.js event loop of our management server, trigger our own rate limiters, lock our MongoDB connection pool, and starve authenticated users from using the dashboard. By running the Demo Sandbox on Port 5001 with independent middleware pipelines, high-throughput benchmarking never compromises dashboard responsiveness or data integrity.</p>
+  </div>
+
+  <!-- ==================== SECTION 2 ==================== -->
+  <h1>Section 2: Technology Stack Justifications</h1>
+  <p>Examiners routinely ask <em>"Why did you choose X over Y?"</em>. Use the following structured technical arguments:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 18%;">Technology</th>
+        <th style="width: 25%;">Role in APIForge</th>
+        <th style="width: 27%;">Why Chosen (Technical Advantages)</th>
+        <th style="width: 30%;">Rejected Alternative & Rationale</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Node.js (ES Modules)</strong></td>
+        <td>Backend Runtime Engine</td>
+        <td>Non-blocking, single-threaded asynchronous event loop ideal for orchestrating I/O-heavy operations (spawning child processes, streaming network probes, querying MongoDB). Modern ES Modules (<code>import/export</code>) provide clean module resolution.</td>
+        <td><strong>Python/Django:</strong> Multi-threaded/WSGI overhead, slower asynchronous I/O primitives for real-time progress polling compared to Node's libuv event loop.</td>
+      </tr>
+      <tr>
+        <td><strong>Express.js</strong></td>
+        <td>Web Framework</td>
+        <td>Minimalist, unopinionated, robust middleware architecture allowing surgical control over request pipelines, custom error handling, and dual server instantiation.</td>
+        <td><strong>NestJS:</strong> Unnecessary enterprise boilerplate and heavy TypeScript decorator overhead for this micro-service style platform.</td>
+      </tr>
+      <tr>
+        <td><strong>MongoDB + Mongoose</strong></td>
+        <td>Database & ODM Layer</td>
+        <td>Dynamic JSON document storage perfectly matches variable test configurations, custom header maps, and nested metric histograms. Schema validation and pre/post hooks provide strict data modeling.</td>
+        <td><strong>PostgreSQL:</strong> Relational schemas require rigid migrations for varying header structures, polymorphic error payloads, and arbitrary metric timeseries maps.</td>
+      </tr>
+      <tr>
+        <td><strong>React 18 + Vite</strong></td>
+        <td>Frontend SPA & Tooling</td>
+        <td>Instant Hot Module Replacement (HMR) powered by native ES modules (esbuild/Rollup), concurrent rendering in React 18, zero build bloat, and fast component updates.</td>
+        <td><strong>Create React App (CRA):</strong> Deprecated, slow Webpack bundling, bloated configuration.<br><strong>Next.js:</strong> Unnecessary SSR overhead for a private, authenticated dashboard SPA.</td>
+      </tr>
+      <tr>
+        <td><strong>Tailwind CSS</strong></td>
+        <td>Styling & Design System</td>
+        <td>Utility-first CSS with zero runtime penalty, consistent design tokens for our custom dark developer theme, responsive breakpoints, and tiny production bundle footprint via PurgeCSS.</td>
+        <td><strong>Bootstrap:</strong> Generic appearance, heavy unused CSS rules.<br><strong>Material UI:</strong> Heavy runtime JavaScript CSS-in-JS performance penalty.</td>
+      </tr>
+      <tr>
+        <td><strong>Zod</strong></td>
+        <td>Authoritative Validation</td>
+        <td>TypeScript-first, runtime schema declaration and parsing. Performs input coercion, trimming, sanitization, and structured error reporting simultaneously.</td>
+        <td><strong>Joi / Express-Validator:</strong> Cumbersome syntax, does not provide automatic type casting or strip unknown fields as cleanly as Zod.</td>
+      </tr>
+      <tr>
+        <td><strong>k6 (Grafana)</strong></td>
+        <td>Load Testing Engine</td>
+        <td>Written in Go, k6 provides exceptional memory efficiency (goroutines vs heavy OS threads), supports high Virtual User (VU) concurrency without Java JVM bloat, and exports structured JSON metrics.</td>
+        <td><strong>Apache JMeter:</strong> Java JVM memory hog, heavy XML configuration, difficult to orchestrate programmatically.<br><strong>Artillery:</strong> Node-based, suffers event loop starvation under high VUs.</td>
+      </tr>
+      <tr>
+        <td><strong>Vitest</strong></td>
+        <td>Testing Framework</td>
+        <td>Shares the exact same configuration, plugins, and transform pipeline as Vite. Native ESM support, built-in watch mode, multi-threading via worker threads, compatible with Jest assertions.</td>
+        <td><strong>Jest:</strong> Painful configuration for native ES Modules, slow Babel transforms, significantly slower test execution across monorepos.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 3 ==================== -->
+  <h1>Section 3: Backend Core & Server Infrastructure</h1>
+
+  <h2>3.1 File: <code>server/src/server.js</code> (Process Entry & Lifecycle)</h2>
+  <p>
+    This file is the executable entry point. It imports <code>app.js</code> and <code>demoApp.js</code>, connects to MongoDB, starts HTTP listeners, and configures OS signal handlers for graceful shutdown.
+  </p>
+
+  <div class="callout callout-viva">
+    <strong>Crucial Examiner Question: Why separate <code>server.js</code> from <code>app.js</code>?</strong>
+    <p><em>Answer:</em> If you call <code>app.listen()</code> inside <code>app.js</code>, then whenever an integration test runs (using Supertest), the test framework will attempt to bind to Port 5000. If the server is already running, tests crash with <code>EADDRINUSE</code> (Port already in use). Separating <code>app.js</code> (which exports the un-listened Express app) from <code>server.js</code> (which binds to the port) allows Supertest to test the HTTP pipeline in-memory on ephemeral random ports without port conflicts!</p>
+  </div>
+
+  <table style="font-size: 8.5pt;">
+    <thead>
+      <tr>
+        <th style="width: 10%;">Lines</th>
+        <th style="width: 35%;">Code Snippet</th>
+        <th style="width: 35%;">Why It's Written (Technical Purpose)</th>
+        <th style="width: 20%;">Consequence if Omitted</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>10-12</code></td>
+        <td><code>connectDatabase().catch(err =&gt; ...);</code></td>
+        <td>Attempts MongoDB connection asynchronously without blocking HTTP server boot. If DB is down, server boots in offline mode so health checks still respond.</td>
+        <td>Server would crash on startup if MongoDB had a 1-second network blip.</td>
+      </tr>
+      <tr>
+        <td><code>14-20</code></td>
+        <td><code>const server = app.listen(5000);<br>const demoServer = demoApp.listen(5001);</code></td>
+        <td>Spawns two separate HTTP listener instances on dedicated ports within the same Node process.</td>
+        <td>Cannot isolate load testing benchmarks from user management traffic.</td>
+      </tr>
+      <tr>
+        <td><code>23-40</code></td>
+        <td><code>const handleShutdown = async (signal) =&gt; {<br>&nbsp;&nbsp;demoServer.close();<br>&nbsp;&nbsp;server.close(async () =&gt; {<br>&nbsp;&nbsp;&nbsp;&nbsp;await disconnectDatabase();<br>&nbsp;&nbsp;});<br>};</code></td>
+        <td><strong>Graceful Shutdown:</strong> Stops accepting new incoming HTTP connections, finishes existing requests in flight, cleanly closes MongoDB socket connections, and releases ports.</td>
+        <td>Abrupt process exit leaves orphaned TCP sockets, corrupts in-flight database writes, and causes 502 Bad Gateway on proxies.</td>
+      </tr>
+      <tr>
+        <td><code>43-46</code></td>
+        <td><code>setTimeout(() =&gt; {<br>&nbsp;&nbsp;process.exit(1);<br>}, 10000).unref();</code></td>
+        <td><strong>Safety Net Timer:</strong> If pending connections hang indefinitely during shutdown, forces exit after 10 seconds. <code>.unref()</code> ensures this timer does NOT keep the event loop alive if everything closes cleanly earlier.</td>
+        <td>Without <code>.unref()</code>, Node.js would be forced to wait the full 10 seconds on every normal shutdown!</td>
+      </tr>
+      <tr>
+        <td><code>49-50</code></td>
+        <td><code>process.on('SIGINT', ...);<br>process.on('SIGTERM', ...);</code></td>
+        <td>Listens for POSIX termination signals: <code>SIGINT</code> (triggered by Ctrl+C in terminal) and <code>SIGTERM</code> (triggered by Kubernetes, Docker, or systemd).</td>
+        <td>Container orchestrators would kill the process abruptly via <code>SIGKILL</code> after timeout.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3.2 File: <code>server/src/app.js</code> (Express Middleware Pipeline)</h2>
+  <p>
+    This file instantiates Express, attaches security middlewares in strict chronological order, defines the health check, mounts API sub-routers, and attaches error handling.
+  </p>
+
+  <div class="callout callout-security">
+    <strong>Security Alert: Why is Middleware Order in Express Critical?</strong>
+    <p>In Express, middlewares execute in the exact order they are registered via <code>app.use()</code>. If <code>errorHandler</code> were registered at the top, it would never catch errors thrown by route handlers below it. If <code>express.json()</code> were placed after route definitions, <code>req.body</code> would be undefined inside controllers!</p>
+  </div>
+
+  <table style="font-size: 8.5pt;">
+    <thead>
+      <tr>
+        <th style="width: 10%;">Lines</th>
+        <th style="width: 35%;">Code Snippet</th>
+        <th style="width: 35%;">Why It's Written (Technical Purpose)</th>
+        <th style="width: 20%;">Viva Trap / Examiner Q</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>21</code></td>
+        <td><code>app.use(helmet());</code></td>
+        <td>Sets 15+ secure HTTP response headers (e.g. <code>X-Content-Type-Options: nosniff</code>, <code>X-Frame-Options: SAMEORIGIN</code>, <code>Strict-Transport-Security</code>, <code>Content-Security-Policy</code>) to protect against XSS, clickjacking, and MIME sniffing.</td>
+        <td>"Name 3 HTTP headers Helmet adds and what attack each prevents."</td>
+      </tr>
+      <tr>
+        <td><code>24-29</code></td>
+        <td><code>app.use(cors({ origin: env.CLIENT_URL, credentials: true }));</code></td>
+        <td>Restricts Cross-Origin requests specifically to the authorized frontend domain (<code>http://localhost:5173</code>) while allowing credentials (cookies, authorization headers).</td>
+        <td>"What happens if origin is set to '*' with credentials: true?" (Browsers reject this combination by CORS specification for security).</td>
+      </tr>
+      <tr>
+        <td><code>32-34</code></td>
+        <td><code>if (env.NODE_ENV !== 'test') { app.use(morgan('dev')); }</code></td>
+        <td>Logs HTTP requests with status codes and response times to the console during development, but silences logs during automated tests.</td>
+        <td>"Why disable logging in test mode?" (Prevents log pollution in test runners like Vitest).</td>
+      </tr>
+      <tr>
+        <td><code>37</code></td>
+        <td><code>app.use('/api', apiLimiter);</code></td>
+        <td>Applies global IP rate-limiting to all <code>/api</code> endpoints before request parsing or database querying.</td>
+        <td>"Why place rate limiter before route handlers?" (Drops abusive bots before wasting CPU/RAM on parsing JSON or database queries).</td>
+      </tr>
+      <tr>
+        <td><code>40-41</code></td>
+        <td><code>app.use(express.json({ limit: '1mb' }));</code></td>
+        <td>Parses incoming JSON request payloads with a strict 1 megabyte ceiling.</td>
+        <td>"Why enforce a 1MB limit?" (Protects against Denial-of-Service attacks where an attacker streams a 500MB JSON payload to crash Node's memory).</td>
+      </tr>
+      <tr>
+        <td><code>44-57</code></td>
+        <td><code>app.get('/api/health', ...)</code></td>
+        <td>Exposes server uptime, version, and live MongoDB connection state without requiring authentication. Used by Kubernetes/Docker liveness probes.</td>
+        <td>"What HTTP status should health check return if DB is disconnected?" (Can still return 200 with <code>database: 'disconnected'</code> so load balancers don't instantly terminate the pod during brief reconnections).</td>
+      </tr>
+      <tr>
+        <td><code>74-77</code></td>
+        <td><code>app.use(notFound);<br>app.use(errorHandler);</code></td>
+        <td><code>notFound</code> catches all unmatched URLs and instantiates a <code>NotFoundError</code>; <code>errorHandler</code> is the final 4-argument handler that formats all errors uniformly.</td>
+        <td>"How does Express recognize error middleware?" (By having exactly 4 parameters: <code>err, req, res, next</code>).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 4 ==================== -->
+  <h1>Section 4: Configuration & Database Layer</h1>
+
+  <h2>4.1 File: <code>server/src/config/env.js</code> (Startup Environment Validation)</h2>
+  <p>
+    This file loads the <code>.env</code> file and validates every configuration variable against a strict Zod schema before the server boots.
+  </p>
+
+  <div class="callout callout-security">
+    <strong>Security Invariant: The 32-Character JWT Secret Rule</strong>
+    <p>
+      In line 17-19 of <code>env.js</code>, Zod enforces:
+      <code>JWT_SECRET: z.string().min(32, { message: 'JWT_SECRET must be at least 32 characters long...' })</code>.
+      If a developer tries to run the server with a weak secret like <code>"secret123"</code>, the application crashes immediately on startup!
+    </p>
+    <p><em>Viva Rationale:</em> HMAC-SHA256 tokens signed with short, dictionary-guessable secrets can be cracked offline in seconds using tools like <code>hashcat</code>. Enforcing 256 bits (32 bytes) of entropy prevents brute-force token forgery.</p>
+  </div>
+
+  <h2>4.2 File: <code>server/src/config/database.js</code> (MongoDB Connection Manager)</h2>
+  <p>
+    Manages the Mongoose ODM connection lifecycle, implements connection pooling, handles auto-reconnect, and isolates test databases.
+  </p>
+
+  <table style="font-size: 8.5pt;">
+    <thead>
+      <tr>
+        <th style="width: 10%;">Lines</th>
+        <th style="width: 35%;">Code Snippet</th>
+        <th style="width: 35%;">Why It's Written (Technical Purpose)</th>
+        <th style="width: 20%;">Viva Questions & Answers</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>11</code></td>
+        <td><code>const uri = customUri || (env.NODE_ENV === 'test' ? env.MONGODB_TEST_URI : env.MONGODB_URI);</code></td>
+        <td>Dynamic URI resolution: Automatically points to <code>apiforge_test</code> in test mode and <code>apiforge</code> in dev/prod.</td>
+        <td>"Why use a separate test database?" (To ensure automated tests never drop or corrupt real development/production data).</td>
+      </tr>
+      <tr>
+        <td><code>14-16</code></td>
+        <td><code>if (mongoose.connection.readyState === 1) { return mongoose; }</code></td>
+        <td>Singleton connection check: If already connected (readyState 1), returns immediately to avoid duplicate socket pools.</td>
+        <td>"What are the 4 values of readyState?" (0: Disconnected, 1: Connected, 2: Connecting, 3: Disconnecting).</td>
+      </tr>
+      <tr>
+        <td><code>20</code></td>
+        <td><code>serverSelectionTimeoutMS: 5000</code></td>
+        <td>Limits database driver connection timeout to 5 seconds (default in Mongoose is 30s).</td>
+        <td>"Why reduce timeout to 5s?" (Fails fast during startup if database is down rather than hanging user requests for 30s).</td>
+      </tr>
+      <tr>
+        <td><code>21</code></td>
+        <td><code>autoIndex: env.NODE_ENV !== 'production'</code></td>
+        <td>Disables automatic Mongoose index building in production environments.</td>
+        <td>"Why disable autoIndex in production?" (Building indexes automatically at runtime creates major performance spikes and collection locks on large databases. In production, indexes must be created via migration scripts).</td>
+      </tr>
+      <tr>
+        <td><code>56-66</code></td>
+        <td><code>mongoose.connection.on('disconnected', ...);<br>mongoose.connection.on('reconnected', ...);</code></td>
+        <td>Event-driven connection monitoring: Emits warnings and logs when MongoDB connectivity is interrupted and restored.</td>
+        <td>"How does Mongoose handle temporary connection drops?" (It automatically queues incoming queries in a 30s buffer and executes them when reconnected).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ==================== SECTION 5 ==================== -->
+  <h1>Section 5: Middleware Pipeline & Security Architecture</h1>
+
+  <h2>5.1 File: <code>server/src/middleware/errorHandler.js</code> (Centralized Error Pipeline)</h2>
+  <p>
+    This is the most critical resilience file in the backend. It intercepts all synchronous and asynchronous errors forwarded via <code>next(err)</code> and categorizes them.
+  </p>
+
+  <div class="callout callout-viva">
+    <strong>Top Viva Question: What is the difference between Operational Errors and Programmer Errors?</strong>
+    <ul>
+      <li><strong>Operational Errors (Trusted):</strong> Expected runtime errors that inevitable occur during normal application usage (e.g. invalid input, unauthorized access, resource not found, duplicate email). These inherit from <code>AppError</code>, have <code>isOperational = true</code>, and return informative HTTP 4xx responses.</li>
+      <li><strong>Programmer Errors (Bugs):</strong> Unexpected failures caused by code mistakes (e.g. <code>TypeError: cannot read property of undefined</code>, syntax errors, failed database connections). In production, these return a generic <code>500 Internal Server Error</code> and conceal stack traces to prevent security leakage.</li>
+    </ul>
+  </div>
+
+  <table style="font-size: 8.5pt;">
+    <thead>
+      <tr>
+        <th style="width: 10%;">Lines</th>
+        <th style="width: 35%;">Code Snippet</th>
+        <th style="width: 35%;">Why It's Written (Technical Purpose)</th>
+        <th style="width: 20%;">Consequence if Omitted</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>13-15</code></td>
+        <td><code>if (res.headersSent) { return _next(err); }</code></td>
+        <td>Checks if HTTP response headers were already sent to the client. If so, delegates to Express default handler.</td>
+        <td>Attempting to call <code>res.status().json()</code> after headers are sent crashes the Node process with <code>ERR_HTTP_HEADERS_SENT</code>.</td>
+      </tr>
+      <tr>
+        <td><code>25-27</code></td>
+        <td><code>else if (err instanceof SyntaxError &amp;&amp; err.status === 400 &amp;&amp; 'body' in err)</code></td>
+        <td>Catches malformed JSON payloads sent by clients in <code>req.body</code> and transforms them into a clean <code>BadRequestError</code>.</td>
+        <td>Server would crash or return an unformatted HTML error page when a client sends invalid JSON syntax.</td>
+      </tr>
+      <tr>
+        <td><code>30-36</code></td>
+        <td><code>else if (err.name === 'ValidationError') { ... }</code></td>
+        <td>Intercepts Mongoose database-level schema validation errors and extracts clean field-by-field error messages.</td>
+        <td>Exposes raw internal Mongoose schema validation objects to the API consumer.</td>
+      </tr>
+      <tr>
+        <td><code>39-41</code></td>
+        <td><code>else if (err.name === 'CastError') { ... }</code></td>
+        <td>Intercepts invalid MongoDB ObjectIDs (e.g. passing <code>"abc"</code> instead of a 24-character hex ID in <code>/api/targets/abc</code>).</td>
+        <td>Returns a generic 500 error instead of a helpful <code>400 Bad Request: Invalid format for parameter</code>.</td>
+      </tr>
+      <tr>
+        <td><code>44-47</code></td>
+        <td><code>else if (err.code === 11000) { ... }</code></td>
+        <td>Intercepts MongoDB unique index violation errors (e.g. attempting to register an existing email) and formats a <code>409 Conflict</code>.</td>
+        <td>Exposes raw database constraint names and internal collection metadata.</td>
+      </tr>
+      <tr>
+        <td><code>54-56</code></td>
+        <td><code>env.NODE_ENV === 'production' ? 'An unexpected internal error occurred' : err.message</code></td>
+        <td>Information Hiding: In production, hides internal error messages and stack traces from malicious users.</td>
+        <td>Attackers could use stack traces to discover server file paths, dependency versions, and database schemas.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <h2>5.2 File: <code>server/src/middleware/authenticate.js</code> (JWT Route Guard)</h2>
+  <p>
+    Extracts Bearer tokens, verifies cryptographic signatures, and checks user account liveness before permitting access to protected routes.
+  </p>
+
+  <table style="font-size: 8.5pt;">
+    <thead>
+      <tr>
+        <th style="width: 10%;">Lines</th>
+        <th style="width: 35%;">Code Snippet</th>
+        <th style="width: 35%;">Why It's Written (Technical Purpose)</th>
+        <th style="width: 20%;">Viva Trap / Examiner Q</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>7-11</code></td>
+        <td><code>if (!authHeader || !authHeader.startsWith('Bearer '))</code></td>
+        <td>Enforces standard RFC 6750 OAuth 2.0 Bearer token format in the HTTP <code>Authorization</code> header.</td>
+        <td>"Why use the Authorization header instead of putting tokens in request body or URL query?" (URL queries are stored in server access logs and browser history; request bodies don't exist in GET requests).</td>
+      </tr>
+      <tr>
+        <td><code>18</code></td>
+        <td><code>const decoded = verifyToken(token);</code></td>
+        <td>Verifies token signature using HMAC-SHA256 and checks expiration time (<code>exp</code> claim). Throws if tampered or expired.</td>
+        <td>"What happens if the token was signed with a different secret?" (<code>jwt.verify</code> throws <code>JsonWebTokenError: invalid signature</code>).</td>
+      </tr>
+      <tr>
+        <td><code>21-24</code></td>
+        <td><code>const user = await User.findById(decoded.id);<br>if (!user) throw new UnauthorizedError(...);</code></td>
+        <td><strong>Account Liveness Check:</strong> Queries the database to verify the user record still exists and was not deleted after the token was issued.</td>
+        <td>"Why query the database if JWT is stateless?" (If a user is banned or deleted, a purely stateless JWT would remain valid until its expiration date! Checking existence guarantees immediate revocation).</td>
+      </tr>
+      <tr>
+        <td><code>26</code></td>
+        <td><code>req.user = user;</code></td>
+        <td>Attaches the sanitized user document to the Express <code>req</code> object so all downstream controllers know who made the request.</td>
+        <td>Enables tenant isolation: controllers can query <code>Target.find({ owner: req.user._id })</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>5.3 File: <code>server/src/middleware/validateRequest.js</code> (Zod Request Interceptor)</h2>
+  <p>
+    A higher-order middleware factory that declaratively validates <code>req.body</code>, <code>req.query</code>, and <code>req.params</code> against Zod schemas.
+  </p>
+
+  <div class="callout callout-viva">
+    <strong>Crucial Code Nuance: Why reassign <code>req.body = await schemas.body.parseAsync(req.body);</code>?</strong>
+    <p>
+      <em>Answer:</em> Zod is not just a validator; it is a <strong>data transformer</strong>. Zod schemas in our project use <code>.trim()</code>, <code>.toLowerCase()</code>, <code>z.coerce.number()</code>, and default values. By reassigning <code>req.body</code>, <code>req.query</code>, and <code>req.params</code> to the parsed result:
+    </p>
+    <ul>
+      <li>Strings are automatically trimmed of whitespace.</li>
+      <li>URL query parameters (which arrive as strings like <code>"15"</code>) are automatically coerced into real JavaScript numbers.</li>
+      <li>Unexpected malicious properties injected by attackers are automatically stripped away!</li>
+    </ul>
+  </div>
+
+  <!-- ==================== SECTION 6 ==================== -->
+  <h1>Section 6: SSRF Defense & Security Architecture</h1>
+
+  <h2>6.1 File: <code>server/src/shared/utils/ssrfFilter.js</code> (Multi-Tier SSRF Engine)</h2>
+  <p>
+    Because APIForge allows users to input target URLs to load-test, it is inherently exposed to <strong>Server-Side Request Forgery (SSRF)</strong>. If left unprotected, an attacker could instruct APIForge to attack the host server's loopback, internal company microservices, or cloud instance metadata.
+  </p>
+
+  <div class="callout callout-security">
+    <strong>What is SSRF and Why is APIForge Vulnerable Without This Filter?</strong>
+    <p>
+      In an SSRF attack, the attacker submits a target like <code>http://169.254.169.254/latest/meta-data/iam/security-credentials/</code>. When the server executes the test or health check, the cloud metadata service sees an internal request originating from the server itself and hands over the AWS/GCP administrative IAM access keys!
+    </p>
+  </div>
+
+  <table style="font-size: 8.5pt;">
+    <thead>
+      <tr>
+        <th style="width: 10%;">Lines</th>
+        <th style="width: 35%;">Code Snippet</th>
+        <th style="width: 35%;">Why It's Written (Technical Purpose)</th>
+        <th style="width: 20%;">Vulnerability Blocked</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>7-12</code></td>
+        <td><code>const BLOCKED_HOSTNAMES = new Set(['localhost', 'metadata.google.internal', ...]);</code></td>
+        <td>Fast-lookup blacklist blocking known loopback and cloud metadata internal hostnames.</td>
+        <td>Blocks GCP internal metadata endpoint and basic localhost probes.</td>
+      </tr>
+      <tr>
+        <td><code>24-41</code></td>
+        <td><code>if (net.isIPv6(ip)) { ... }</code></td>
+        <td>Inspects IPv6 addresses for loopback (<code>::1</code>), link-local (<code>fe80::</code>), unique local (<code>fc00::</code>, <code>fd00::</code>), and IPv4-mapped loopback addresses (<code>::ffff:127.0.0.1</code>).</td>
+        <td>Bypassing IPv4 filters by submitting IPv6 representations of localhost.</td>
+      </tr>
+      <tr>
+        <td><code>51-66</code></td>
+        <td><code>if (p0 === 127) return true;<br>if (p0 === 10) return true;<br>if (p0 === 172 &amp;&amp; p1 &gt;= 16 &amp;&amp; p1 &lt;= 31) return true;<br>if (p0 === 192 &amp;&amp; p1 === 168) return true;<br>if (p0 === 169 &amp;&amp; p1 === 254) return true;</code></td>
+        <td>Enforces RFC 1918 Private Network filtering:
+          <br>• <code>127.0.0.0/8</code> (Localhost)
+          <br>• <code>10.0.0.0/8</code> (Class A LAN)
+          <br>• <code>172.16.0.0/12</code> (Class B LAN)
+          <br>• <code>192.168.0.0/16</code> (Class C LAN)
+          <br>• <code>169.254.0.0/16</code> (Link-Local & Cloud Metadata)</td>
+        <td>Blocks scanning of internal company intranets, routers, and AWS/Azure metadata services.</td>
+      </tr>
+      <tr>
+        <td><code>115-119</code></td>
+        <td><code>if (parsed.protocol !== 'http:' &amp;&amp; parsed.protocol !== 'https:')</code></td>
+        <td>Restricts protocol schemes strictly to HTTP and HTTPS.</td>
+        <td>Blocks protocol smuggling attacks using <code>file:///etc/passwd</code>, <code>gopher://</code>, or <code>ftp://</code>.</td>
+      </tr>
+      <tr>
+        <td><code>150-166</code></td>
+        <td><code>const { address } = await dns.lookup(hostname);<br>if (isPrivateIp(address)) throw new ValidationError(...);</code></td>
+        <td><strong>DNS Resolution & Rebinding Defense:</strong> Performs asynchronous DNS lookup to find the physical IP behind a domain name before allowing it.</td>
+        <td><strong>DNS Rebinding Attack:</strong> An attacker registers <code>attacker.com</code> pointing to <code>127.0.0.1</code>. String checks think it's a valid public domain, but DNS lookup catches the private IP!</td>
+      </tr>
+      <tr>
+        <td><code>121-129</code></td>
+        <td><code>if (options.allowDemo &amp;&amp; isDemoTarget(parsed)) { return { ... isDemo: true }; }</code></td>
+        <td><strong>Sanctioned Whitelist Exception:</strong> Explicitly permits targeting the local Demo Sandbox API ONLY if the port matches <code>env.DEMO_PORT</code>.</td>
+        <td>Allows safe local benchmarking without blowing open arbitrary localhost ports.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 7 ==================== -->
+  <h1>Section 7: Authentication & Authorization Module</h1>
+
+  <h2>7.1 File: <code>server/src/modules/auth/user.model.js</code> (Mongoose User Schema)</h2>
+  <table style="font-size: 8.5pt;">
+    <thead>
+      <tr>
+        <th style="width: 10%;">Lines</th>
+        <th style="width: 35%;">Code Snippet</th>
+        <th style="width: 35%;">Why It's Written (Technical Purpose)</th>
+        <th style="width: 20%;">Viva Questions & Answers</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>16-20</code></td>
+        <td><code>email: { type: String, unique: true, lowercase: true, trim: true, index: true }</code></td>
+        <td>Normalizes emails to lowercase to prevent duplicate account creation (e.g. <code>User@domain.com</code> vs <code>user@domain.com</code>). Creates unique B-tree index in MongoDB.</td>
+        <td>"What happens at the database level when unique: true is set?" (MongoDB creates an index constraint. If a duplicate is inserted, it throws error code 11000).</td>
+      </tr>
+      <tr>
+        <td><code>22-26</code></td>
+        <td><code>passwordHash: { type: String, select: false }</code></td>
+        <td><strong>Crucial Security Control:</strong> <code>select: false</code> prevents Mongoose from including the password hash in standard <code>User.find()</code> or <code>User.findById()</code> queries.</td>
+        <td>"How do you query the password hash when validating login credentials?" (Use <code>User.findOne({ email }).select('+passwordHash')</code>).</td>
+      </tr>
+      <tr>
+        <td><code>30-36</code></td>
+        <td><code>toJSON: { transform: (doc, ret) =&gt; { delete ret.passwordHash; delete ret.__v; return ret; } }</code></td>
+        <td><strong>Defense-in-Depth Serialization Hook:</strong> Whenever a user document is serialized to JSON (e.g. <code>res.json(user)</code>), automatically deletes <code>passwordHash</code> and Mongoose internal version key <code>__v</code>.</td>
+        <td>Guarantees password hashes never leak to the client even if a developer forgets <code>select: false</code>.</td>
+      </tr>
+      <tr>
+        <td><code>59-62</code></td>
+        <td><code>userSchema.statics.hashPassword = async function(password) {<br>&nbsp;&nbsp;const salt = await bcrypt.genSalt(10);<br>&nbsp;&nbsp;return bcrypt.hash(password, salt);<br>};</code></td>
+        <td>Model static method hashing passwords with Bcrypt using 10 salt rounds (~100ms CPU cost).</td>
+        <td>"Why 10 rounds of salt?" (Work factor of 10 provides 2^10 = 1024 hashing rounds. It is computationally expensive for brute-force attacks while maintaining fast user login).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ==================== SECTION 8 ==================== -->
+  <h1>Section 8: Target Management Module</h1>
+
+  <h2>8.1 File: <code>server/src/modules/targets/target.service.js</code></h2>
+  <p>Implements multi-tenant CRUD operations and health probe executions.</p>
+
+  <div class="callout callout-viva">
+    <strong>Crucial Architecture Rule: Multi-Tenant Ownership Isolation</strong>
+    <p>
+      Notice lines 12, 49, 66, and 92:
+      <code>Target.findOne({ _id: targetId, owner: userId })</code>.
+      Every database query strictly filters by both <code>_id</code> and <code>owner: userId</code>. Even if User A guesses the MongoID of a Target owned by User B, the query returns <code>null</code>, preventing cross-tenant data leakage or unauthorized testing!
+    </p>
+  </div>
+
+  <table style="font-size: 8.5pt;">
+    <thead>
+      <tr>
+        <th style="width: 10%;">Lines</th>
+        <th style="width: 35%;">Code Snippet</th>
+        <th style="width: 35%;">Why It's Written (Technical Purpose)</th>
+        <th style="width: 20%;">Viva Questions & Answers</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>28-29</code></td>
+        <td><code>const { normalizedUrl } = await validateTargetUrl(input.baseUrl);</code></td>
+        <td>Performs SSRF pre-flight validation before creating or updating any target.</td>
+        <td>"What does URL normalization do?" (Strips trailing slashes, path queries, and normalizes port to prevent duplicate targets).</td>
+      </tr>
+      <tr>
+        <td><code>130-137</code></td>
+        <td><code>const controller = new globalThis.AbortController();<br>const timeoutId = setTimeout(() =&gt; controller.abort(), 5000);<br>const response = await fetch(target.baseUrl, { signal: controller.signal });</code></td>
+        <td><strong>Resilient Health Probe:</strong> Uses native <code>fetch</code> with an <code>AbortController</code> to enforce an absolute 5-second timeout on target health checks.</td>
+        <td>"What happens if the target server hangs or drops packets?" (The timeout fires <code>controller.abort()</code>, throwing an <code>AbortError</code>, marking the target 'offline' without hanging our server).</td>
+      </tr>
+      <tr>
+        <td><code>158-165</code></td>
+        <td><code>target.lastHealthCheck = { status, statusCode, latencyMs, checkedAt: new Date() };<br>await target.save();</code></td>
+        <td>Persists probe results directly onto the target document so dashboard users can view historical health without re-probing.</td>
+        <td>Caches health status to avoid unnecessary network traffic on every page load.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ==================== SECTION 9 ==================== -->
+  <h1>Section 9: Isolated Built-in Demo Sandbox</h1>
+
+  <h2>9.1 File: <code>server/src/modules/demo/demo.controller.js</code></h2>
+  <p>
+    Provides deterministic endpoints for benchmarking without third-party internet dependencies:
+  </p>
+  <ul>
+    <li><code>GET /api/demo/ping</code>: Instant 200 OK baseline for measuring raw network & framework overhead.</li>
+    <li><code>GET /api/demo/delayed?ms=250</code>: Clamped server delay using <code>setTimeout</code> to evaluate latency metrics and threshold breaches.</li>
+    <li><code>GET /api/demo/error?status=500&rate=0.5</code>: Probabilistic fault injection using <code>Math.random() &lt; rate</code> to test error handling.</li>
+    <li><code>GET /api/demo/rate-limited?limit=10&window=10</code>: Sliding-window rate-limiting returning HTTP 429 and standard <code>Retry-After</code> headers.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 10 ==================== -->
+  <h1>Section 10: Test Configuration & Finite State Machine Engine</h1>
+
+  <h2>10.1 File: <code>server/src/modules/tests/testRun.model.js</code> (Authoritative Lifecycle State Machine)</h2>
+  <p>
+    Load tests transition through a strict, irreversible state machine:
+    <code>QUEUED &rarr; RUNNING &rarr; [COMPLETED | FAILED | CANCELLED]</code>.
+  </p>
+
+  <div class="callout callout-viva">
+    <strong>Top Viva Question: Why implement a Finite State Machine with Terminal States?</strong>
+    <p>
+      <em>Answer:</em> In distributed and asynchronous systems, race conditions can occur. For instance, if a user clicks <em>Cancel</em> while a worker process is finishing a test, a late worker callback might attempt to mark the test as <code>COMPLETED</code>.
+      In our model (lines 20-28):
+      <code>COMPLETED: [], FAILED: [], CANCELLED: []</code>.
+      Once a test reaches a terminal state, all future transitions are rejected! This guarantees data integrity and prevents zombie worker processes from overwriting cancelled tests.
+    </p>
+  </div>
+
+  <table style="font-size: 8.5pt;">
+    <thead>
+      <tr>
+        <th style="width: 10%;">Lines</th>
+        <th style="width: 35%;">Code Snippet</th>
+        <th style="width: 35%;">Why It's Written (Technical Purpose)</th>
+        <th style="width: 20%;">Consequence if Omitted</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>51-54</code></td>
+        <td><code>targetSnapshot: { name: String, baseUrl: String }</code></td>
+        <td><strong>Immutable Target Snapshot:</strong> Captures the target's name and URL at the exact moment the test is created.</td>
+        <td>If a user later edits or deletes the Target, historical test reports would lose their URL or show inaccurate historical targets!</td>
+      </tr>
+      <tr>
+        <td><code>162-163</code></td>
+        <td><code>testRunSchema.index({ owner: 1, createdAt: -1 });<br>testRunSchema.index({ status: 1, owner: 1 });</code></td>
+        <td>Compound B-Tree Indexes: The first optimizes paginated test history sorted by date; the second optimizes concurrency queries counting active tests per user.</td>
+        <td>Without these indexes, every pagination query or concurrency check performs a slow, full collection scan (O(N) vs O(log N)).</td>
+      </tr>
+      <tr>
+        <td><code>176-249</code></td>
+        <td><code>transitionTo(targetStatus, metadata)</code></td>
+        <td>Encapsulates status transitions, validates allowed moves against <code>VALID_TRANSITIONS</code>, records <code>startTime</code>/<code>endTime</code>, and computes <code>actualDurationMs</code>.</td>
+        <td>Scattered, inconsistent status mutations across controllers.</td>
+      </tr>
+      <tr>
+        <td><code>254-269</code></td>
+        <td><code>testRunSchema.pre('save', function (next) { ... })</code></td>
+        <td><strong>Defense-in-Depth Pre-Save Hook:</strong> Intercepts direct document property mutations (e.g. <code>testRun.status = 'queued'</code>) and rejects illegal transitions.</td>
+        <td>Prevents accidental bypass of the state machine by other developers.</td>
+      </tr>
+      <tr>
+        <td><code>271-279</code></td>
+        <td><code>post('init')</code> and <code>post('save')</code> hooks</td>
+        <td>Stores <code>this.$locals.originalStatus = this.status</code> in document memory upon retrieval from MongoDB.</td>
+        <td>Enables the <code>pre('save')</code> hook to know what the previous state was before the update.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>10.2 File: <code>server/src/modules/tests/test.service.js</code> (Concurrency & Execution Engine)</h2>
+  <div class="callout callout-security">
+    <strong>Resource Protection: Per-User Concurrency Cap</strong>
+    <p>
+      In lines 29-39, before creating a test run, the service queries:
+      <code>await TestRun.countDocuments({ owner: userId, status: { $in: ['queued', 'running'] } })</code>.
+      If <code>activeCount &gt;= MAX_CONCURRENT_RUNS_PER_USER (2)</code>, it throws a <code>409 ConflictError</code>.
+    </p>
+    <p><em>Viva Rationale:</em> Running load tests consumes significant CPU, RAM, and network sockets (spawning k6 virtual users). Without concurrency caps, a single user could queue 50 load tests simultaneously and exhaust the server's thread pool and network interface!</p>
+  </div>
+
+  <!-- ==================== SECTION 11 ==================== -->
+  <h1>Section 11: Frontend Architecture & React 18 Implementation</h1>
+
+  <h2>11.1 File: <code>client/src/services/apiClient.js</code> (Axios Interceptors)</h2>
+  <table style="font-size: 8.5pt;">
+    <thead>
+      <tr>
+        <th style="width: 10%;">Lines</th>
+        <th style="width: 35%;">Code Snippet</th>
+        <th style="width: 35%;">Why It's Written (Technical Purpose)</th>
+        <th style="width: 20%;">Viva Questions & Answers</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>14-27</code></td>
+        <td><code>apiClient.interceptors.request.use((config) =&gt; {<br>&nbsp;&nbsp;const token = localStorage.getItem('apiforge_token');<br>&nbsp;&nbsp;if (token) config.headers.Authorization = `Bearer ${token}`;<br>&nbsp;&nbsp;return config;<br>});</code></td>
+        <td><strong>Request Interceptor:</strong> Automatically reads the JWT from local storage and injects the <code>Authorization: Bearer &lt;token&gt;</code> header into every outgoing HTTP request.</td>
+        <td>"Why use an interceptor instead of manually setting headers in every API call?" (DRY principle: eliminates boilerplate across 20+ service functions and guarantees no authenticated call forgets the token).</td>
+      </tr>
+      <tr>
+        <td><code>30-44</code></td>
+        <td><code>apiClient.interceptors.response.use(<br>&nbsp;&nbsp;(response) =&gt; response.data,<br>&nbsp;&nbsp;(error) =&gt; Promise.reject(errorPayload)<br>);</code></td>
+        <td><strong>Response Interceptor:</strong> Automatically unwraps <code>response.data</code> so components receive the payload directly, and normalizes all error structures into <code>{ code, message, status }</code>.</td>
+        <td>"How does this simplify React component code?" (Components never need <code>response.data.data</code> or ugly <code>err.response &amp;&amp; err.response.data</code> checks).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>11.2 File: <code>client/src/context/AuthContext.jsx</code> (State & Lifecycle)</h2>
+  <div class="callout callout-viva">
+    <strong>Crucial React Pattern: Memory Leak & Unmounted State Prevention</strong>
+    <p>
+      In lines 12-42 of <code>AuthContext.jsx</code>:
+      <code>let isMounted = true; ... return () =&gt; { isMounted = false; };</code>.
+      When the application mounts, it makes an async call to <code>authService.getMe()</code> to hydrate the user profile. If the user navigates away or unmounts the component before the network request finishes, <code>isMounted</code> is set to <code>false</code>. State updates (<code>setUser</code>, <code>setIsLoading</code>) are guarded by <code>if (isMounted)</code>, preventing React memory leaks and console warnings!
+    </p>
+  </div>
+
+  <h2>11.3 File: <code>client/src/features/tests/TestRunsPage.jsx</code> (Smart Polling Engine)</h2>
+  <p>
+    Lines 62-76 implement an adaptive polling engine using <code>useRef</code> and <code>setInterval</code>:
+  </p>
+  <ul>
+    <li>The page checks if any test runs are in <code>'queued'</code> or <code>'running'</code> status.</li>
+    <li>If active tests exist, it starts a 3000ms background interval calling <code>fetchTests(true)</code>.</li>
+    <li>Notice the argument <code>isPolling = true</code>: This suppresses the global full-page skeleton loader so the user's dashboard does not flicker while polling!</li>
+    <li>As soon as all tests transition to terminal states, <code>clearInterval()</code> is automatically triggered to conserve network bandwidth and battery.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 12 ==================== -->
+  <h1>Section 12: Load Testing & Performance Metrics Formulations</h1>
+  <p>Examiners will rigorously test your understanding of metrics, latency, and load-testing mathematics:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 20%;">Metric Term</th>
+        <th style="width: 40%;">Definition & Mathematical Formula</th>
+        <th style="width: 40%;">Engineering Significance in APIForge</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Virtual User (VU)</strong></td>
+        <td>An independent, concurrent execution thread/goroutine running a continuous loop of HTTP requests simulating an active user session.</td>
+        <td>In APIForge, tests configure between 1 and 50 VUs. Unlike physical threads, k6 implements VUs as lightweight Go goroutines.</td>
+      </tr>
+      <tr>
+        <td><strong>RPS (Throughput)</strong></td>
+        <td><code>Throughput = Total HTTP Requests / Total Duration (Seconds)</code></td>
+        <td>Measures the transaction processing capacity of the target API before saturation occurs.</td>
+      </tr>
+      <tr>
+        <td><strong>Average Latency</strong></td>
+        <td><code>Avg = (&sum; Latency of all requests) / N</code></td>
+        <td><strong>The Flaw of Averages:</strong> Average latency hides tail spikes! If 99 requests take 10ms and 1 request takes 10,000ms, the average is ~110ms, misleading developers into believing all users have an acceptable experience.</td>
+      </tr>
+      <tr>
+        <td><strong>Median Latency (P50)</strong></td>
+        <td>The 50th percentile: 50% of requests were faster than this value, and 50% were slower.</td>
+        <td>Represents the true typical user experience, immune to extreme outlier skew.</td>
+      </tr>
+      <tr>
+        <td><strong>P90 & P95 Latency</strong></td>
+        <td>90% (or 95%) of all requests completed faster than this threshold. Only the slowest 5% exceeded it.</td>
+        <td><strong>The Gold Standard for SLAs:</strong> In cloud microservices, high-percentile latency determines whether cascading microservice bottlenecks occur.</td>
+      </tr>
+      <tr>
+        <td><strong>Failure Rate</strong></td>
+        <td><code>Failure Rate = (Failed Requests + Network Errors) / Total Requests</code></td>
+        <td>Measures reliability. High throughput with a 20% failure rate indicates the target server is dropping connections or returning HTTP 500/503 errors.</td>
+      </tr>
+      <tr>
+        <td><strong>Ramp-Up Duration</strong></td>
+        <td>The initial period during which VUs are gradually scaled up from 0 to target VU count.</td>
+        <td>Prevents false positive spikes caused by "cold" targets (e.g. warming up database connection pools, JIT compiler optimization, and TCP connection establishment).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ==================== SECTION 13 ==================== -->
+  <h1>Section 13: Testing Strategy & Verification Framework</h1>
+  <p>
+    APIForge achieves 100% verification across 131 test cases in the monorepo:
+  </p>
+  <ul>
+    <li><strong>Server Unit Tests (11 test files, 73 tests):</strong> Test individual isolated units: SSRF IP parsing (IPv4, IPv6, CIDR blocks), Zod validation schemas, Mongoose models, password hashing, and token signing.</li>
+    <li><strong>Server Integration Tests (5 test files, 23 tests):</strong> Uses <code>supertest</code> to fire live HTTP requests against the Express app and an in-memory/isolated MongoDB database, asserting status codes, response headers, and database mutations.</li>
+    <li><strong>Client Unit & Component Tests (9 test files, 35 tests):</strong> Uses React Testing Library and <code>jsdom</code> to mount forms, simulate clicks, assert input validation alerts, verify protected route redirects, and check modal states.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECTION 14 ==================== -->
+  <h1>Section 14: Top 50 Viva Examiner Questions & High-Scoring Answers</h1>
+
+  <h2>Category A: System Architecture & Design Choices (Q1–Q10)</h2>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q1</span> Why did you build APIForge as a Monorepo using npm workspaces?</div>
+    <div class="qa-answer">A monorepo with npm workspaces (<code>server</code>, <code>client</code>) allows us to maintain the frontend and backend in a unified repository with synchronized versioning, shared scripts (<code>npm run dev</code>, <code>npm run test</code>), unified CI/CD pipelines, and single-command dependency management without needing multiple git repositories.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q2</span> Why did you run two HTTP servers (ports 5000 and 5001) instead of one?</div>
+    <div class="qa-answer">Port 5000 is our management server (auth, targets, test configuration, MongoDB). Port 5001 is the isolated Demo Sandbox API. If high-concurrency load tests were directed against Port 5000, it would saturate the Node event loop, lock the database connection pool, trigger our own rate limiters, and lock users out of their dashboard. Port 5001 isolates benchmark load with zero side-effects on management operations.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q3</span> What is the advantage of using React 18 + Vite over traditional Create React App (CRA)?</div>
+    <div class="qa-answer">Vite leverages native browser ES Modules and <code>esbuild</code>, providing instantaneous server start (~200ms vs 30s in CRA) and sub-second Hot Module Replacement (HMR). Create React App is officially deprecated, relies on slow Webpack bundling, and lacks modern build optimizations.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q4</span> Why choose MongoDB (NoSQL) over PostgreSQL (SQL) for APIForge?</div>
+    <div class="qa-answer">API load tests produce polymorphic, unstructured data: custom request header maps, varying threshold rules, nested latency histograms, and status code distribution counters. In MongoDB, these are stored natively as BSON documents without requiring complex relational joins or heavy table schema migrations whenever metrics evolve.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q5</span> How does Node.js handle high concurrency despite being single-threaded?</div>
+    <div class="qa-answer">Node.js uses an event-driven, non-blocking I/O model powered by the <code>libuv</code> C library. While JavaScript execution runs on a single thread, all asynchronous I/O operations (network requests, disk access, database queries, child processes) are offloaded to OS kernel threads or the libuv thread pool. When I/O completes, callbacks are queued to the event loop.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q6</span> Why did you separate <code>server.js</code> from <code>app.js</code>?</div>
+    <div class="qa-answer">To enable testability. Supertest requires the Express <code>app</code> object to bind to ephemeral ports in memory. If <code>app.listen(5000)</code> were executed inside <code>app.js</code>, integration test suites would fail with <code>EADDRINUSE</code> whenever the actual development server was running.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q7</span> What is Graceful Shutdown and how does APIForge implement it?</div>
+    <div class="qa-answer">Graceful shutdown intercepts OS termination signals (<code>SIGINT</code>, <code>SIGTERM</code>). Instead of terminating abruptly, the server stops accepting new connections, waits for active HTTP requests to finish, cleanly closes MongoDB connections via <code>disconnectDatabase()</code>, and exits. A safety-net timer with <code>.unref()</code> guarantees forced exit if requests hang past 10 seconds.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q8</span> What is <code>.unref()</code> in Node.js timers?</div>
+    <div class="qa-answer">Normally, an active <code>setTimeout</code> keeps the Node.js event loop alive until it expires. Calling <code>.unref()</code> on the timer object instructs Node that if this timer is the only thing left in the event loop, the process can exit immediately without waiting for the timer to tick down.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q9</span> Why did you use React Context API instead of Redux for authentication?</div>
+    <div class="qa-answer">Auth state in APIForge is straightforward (<code>user</code>, <code>token</code>, <code>isAuthenticated</code>, <code>isLoading</code>). React Context provides a clean, native solution with zero additional dependencies or boilerplate. Redux would introduce unnecessary actions, reducers, and store complexity for state that rarely changes outside login/logout.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q10</span> Why use Tailwind CSS instead of Material UI or Bootstrap?</div>
+    <div class="qa-answer">Tailwind CSS is utility-first and compiles away unused styles via PurgeCSS, generating tiny CSS bundles (&lt;10KB). It avoids the heavy runtime JavaScript CSS-in-JS performance overhead of Material UI, and avoids the generic, hard-to-customize look of Bootstrap.</div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <h2>Category B: Security & Vulnerability Fortifications (Q11–Q20)</h2>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q11</span> What is SSRF and how does APIForge prevent it?</div>
+    <div class="qa-answer">Server-Side Request Forgery occurs when an attacker tricks a backend server into making requests to private internal resources. APIForge implements a multi-tier filter in <code>ssrfFilter.js</code>: it blocks non-HTTP schemes, rejects loopbacks (<code>127.0.0.0/8</code>), private RFC 1918 subnets (<code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code>), cloud metadata (<code>169.254.169.254</code>), and IPv6 loopbacks.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q12</span> What is a DNS Rebinding attack and how does your SSRF filter protect against it?</div>
+    <div class="qa-answer">In a DNS rebinding attack, an attacker registers a public domain (e.g. <code>evil.com</code>) whose DNS A record points to <code>127.0.0.1</code> or an internal IP. A simple regex check on the URL string sees a valid domain name and allows it. APIForge calls <code>dns.lookup(hostname)</code> to resolve the real IP address before executing requests and blocks it if the resolved IP is private.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q13</span> Why did you choose Bcrypt over SHA-256 for password hashing?</div>
+    <div class="qa-answer">SHA-256 is an ultra-fast general-purpose hash function. Attackers with GPUs can calculate billions of SHA-256 hashes per second using rainbow tables. Bcrypt is an adaptive key derivation function with an adjustable work factor (salt rounds). It incorporates unique random salts and is intentionally computationally expensive (~100ms per check), making brute-force cracking mathematically infeasible.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q14</span> Why does your Zod environment schema mandate a minimum 32-character JWT secret?</div>
+    <div class="qa-answer">HMAC-SHA256 tokens signed with short, low-entropy secrets can be cracked offline in seconds using dictionary attacks. Enforcing 32 characters (256 bits of entropy) ensures the secret cannot be brute-forced even if attackers obtain signed tokens.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q15</span> What does <code>select: false</code> do in the Mongoose User schema?</div>
+    <div class="qa-answer">It excludes the <code>passwordHash</code> field from query results by default whenever <code>User.find()</code> or <code>User.findById()</code> is called. This prevents accidental exposure of password hashes in API responses. The field must be explicitly requested using <code>.select('+passwordHash')</code> only during credential verification.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q16</span> What does Helmet middleware do?</div>
+    <div class="qa-answer">Helmet sets secure HTTP response headers: <code>X-Content-Type-Options: nosniff</code> (prevents MIME-sniffing exploits), <code>X-Frame-Options: SAMEORIGIN</code> (prevents clickjacking in iframes), <code>Strict-Transport-Security</code> (forces HTTPS), and <code>Content-Security-Policy</code> (restricts unauthorized script execution).</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q17</span> Why is <code>express.json({ limit: '1mb' })</code> configured with a 1MB limit?</div>
+    <div class="qa-answer">Without a size limit, an attacker could send a 100MB JSON payload in a POST request. Node.js would attempt to parse this into memory, causing event loop blocking, memory spikes, and eventual out-of-memory crashes (Denial of Service). A 1MB limit rejects oversized payloads immediately with HTTP 413 Payload Too Large.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q18</span> Why is rate-limiting configured differently on auth routes vs general API routes?</div>
+    <div class="qa-answer">General API routes allow 200 requests per 15 minutes to support active dashboard navigation. Auth routes (login/register) are strictly limited to 10 attempts per 15 minutes. This aggressively prevents credential-stuffing and brute-force password cracking attacks.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q19</span> Why do we perform an account existence check in <code>authenticate.js</code> after verifying the JWT?</div>
+    <div class="qa-answer">Because JWTs are stateless. If a user is deleted, suspended, or has their password changed, their JWT remains cryptographically valid until its expiration time. Checking <code>User.findById(decoded.id)</code> ensures revoked or deleted users are denied access immediately.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q20</span> Why does the error handler conceal error stacks in production mode?</div>
+    <div class="qa-answer">Error stack traces reveal internal file paths, operating system details, third-party library versions, and database schemas. Attackers use this information to target known vulnerabilities. In production, we return a generic message and keep detailed stacks restricted to server logs.</div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <h2>Category C: Backend Engineering & Express/Mongoose (Q21–Q30)</h2>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q21</span> How does Express distinguish error-handling middleware from normal middleware?</div>
+    <div class="qa-answer">By function arity (parameter count). Normal Express middleware accepts 2 or 3 arguments: <code>(req, res, next)</code>. Error-handling middleware MUST declare exactly 4 arguments: <code>(err, req, res, next)</code>. Express checks <code>fn.length === 4</code> to identify error handlers.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q22</span> What does <code>res.headersSent</code> guard against in <code>errorHandler.js</code>?</div>
+    <div class="qa-answer">If part of the response body or headers has already been streamed to the client before an error is thrown, attempting to call <code>res.status(500).json(...)</code> will crash the Node process with <code>ERR_HTTP_HEADERS_SENT</code>. Checking <code>if (res.headersSent) return next(err);</code> delegates to Express's built-in stream termination handler safely.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q23</span> What is MongoDB Error Code 11000?</div>
+    <div class="qa-answer">It is the MongoDB Duplicate Key error, triggered when an insert or update violates a <code>unique: true</code> index constraint (such as attempting to register with an email address that already exists).</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q24</span> What is a Mongoose CastError and how do you handle it?</div>
+    <div class="qa-answer">A <code>CastError</code> occurs when Mongoose fails to cast a string into the schema type (e.g. passing an invalid 5-character string where a 24-character hexadecimal MongoDB <code>ObjectId</code> is expected). The error handler intercepts this and returns HTTP 400 Bad Request instead of an internal 500 error.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q25</span> Why is <code>autoIndex</code> disabled in production inside <code>database.js</code>?</div>
+    <div class="qa-answer">When Mongoose boots with <code>autoIndex: true</code>, it issues <code>createIndex</code> commands for all schemas. In production collections with thousands of documents, this causes significant performance degradation and collection locking. Indexes in production should be created beforehand via migration scripts.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q26</span> What is the purpose of compound indexes like <code>{ owner: 1, createdAt: -1 }</code>?</div>
+    <div class="qa-answer">Compound indexes index multiple fields together. In APIForge, users frequently request their own test history sorted by creation time (<code>TestRun.find({ owner: userId }).sort({ createdAt: -1 })</code>). A compound index allows MongoDB to satisfy both the filter and the sort order directly from the B-tree index in O(log N) time without scanning unowned documents or performing in-memory sorting.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q27</span> How does the Finite State Machine in <code>testRun.model.js</code> enforce valid transitions?</div>
+    <div class="qa-answer">It maintains a transition map where terminal states (<code>completed</code>, <code>failed</code>, <code>cancelled</code>) have empty allowed arrays (<code>[]</code>). The <code>transitionTo()</code> method verifies that the requested transition exists in the map. Additionally, a Mongoose <code>pre('save')</code> hook checks <code>$locals.originalStatus</code> to prevent developers from bypassing the state machine via direct property assignment.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q28</span> Why store an immutable <code>targetSnapshot</code> inside the TestRun document?</div>
+    <div class="qa-answer">If a user modifies the target URL or deletes the target in the future, past test records should remain historically accurate. Embedding an immutable snapshot of <code>{ name, baseUrl }</code> ensures the test run permanently records the exact endpoint tested at that point in time.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q29</span> What is an AbortController and where is it used in APIForge?</div>
+    <div class="qa-answer"><code>AbortController</code> is a standard JavaScript interface for aborting asynchronous operations. It is used in <code>target.service.js</code> inside the target health probe: a 5-second timer calls <code>controller.abort()</code>, which cancels the fetch request if the target server hangs or fails to respond.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q30</span> What is the difference between Mongoose methods and statics?</div>
+    <div class="qa-answer"><code>methods</code> are document instance methods called on an individual instantiated record (e.g. <code>user.comparePassword(...)</code> or <code>testRun.transitionTo(...)</code>). <code>statics</code> are model-level methods called directly on the Model class itself (e.g. <code>User.hashPassword(...)</code>).</div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <h2>Category D: Frontend Architecture & React (Q31–Q40)</h2>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q31</span> What is an Axios Interceptor and what two interceptors are used in APIForge?</div>
+    <div class="qa-answer">Interceptors run code before a request is dispatched or after a response is received. APIForge uses: (1) A <strong>Request Interceptor</strong> that reads the token from <code>localStorage</code> and attaches the Bearer header; (2) A <strong>Response Interceptor</strong> that unwraps <code>response.data</code> and normalizes errors into a uniform <code>{ code, message, status }</code> structure.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q32</span> Why use <code>isMounted</code> in <code>AuthContext.jsx</code>'s <code>useEffect</code>?</div>
+    <div class="qa-answer">Asynchronous operations (like fetching the user profile) may finish after a component has already unmounted (e.g. if the user navigated away). Calling <code>setState</code> on an unmounted component causes memory leaks and React warnings. The <code>isMounted</code> cleanup flag ensures state is only updated if the component is still mounted.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q33</span> How does the <code>ProtectedRoute</code> component work?</div>
+    <div class="qa-answer">It consumes <code>useAuth()</code>. If <code>isLoading</code> is true, it displays an animated skeleton shell. If <code>isAuthenticated</code> is false, it uses React Router's <code>&lt;Navigate to="/login" state={{ from: location }} replace /&gt;</code> to redirect to login while preserving the intended destination in router state for post-login redirect. If authenticated, it renders child routes via <code>&lt;Outlet /&gt;</code>.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q34</span> How does the smart polling mechanism work in <code>TestRunsPage.jsx</code>?</div>
+    <div class="qa-answer">It uses a <code>useRef</code> to hold the interval ID. A <code>useEffect</code> inspects the list of test runs: if any run is <code>queued</code> or <code>running</code>, it sets a 3-second interval calling <code>fetchTests(true)</code> (passing <code>isPolling=true</code> to avoid full-screen skeleton flickering). When all tests enter terminal states, the interval is cleared immediately.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q35</span> What is the advantage of custom hooks like <code>useAuth()</code>?</div>
+    <div class="qa-answer">It abstracts <code>useContext(AuthContext)</code> into a clean, reusable call. It also adds a safety assertion: if <code>useAuth()</code> is called outside an <code>AuthProvider</code>, it throws an immediate descriptive error (<code>"useAuth must be used within an AuthProvider"</code>), preventing silent runtime failures.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q36</span> Why use <code>useCallback</code> for <code>fetchTests</code> in <code>TestRunsPage.jsx</code>?</div>
+    <div class="qa-answer"><code>useCallback</code> memoizes the function definition across re-renders. Because <code>fetchTests</code> is listed as a dependency in the polling <code>useEffect</code>, without <code>useCallback</code> a new function reference would be created on every render, triggering an infinite polling loop!</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q37</span> What are React Router Future Flags (e.g. <code>v7_startTransition</code>, <code>v7_relativeSplatPath</code>)?</div>
+    <div class="qa-answer">They enable React Router v7 breaking behavioral changes early in React Router v6. This ensures smooth, zero-downtime upgrades to the next major version of the router without code breakage.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q38</span> Why store JWT in <code>localStorage</code> instead of an in-memory variable?</div>
+    <div class="qa-answer">Storing in an in-memory variable would log the user out on every page refresh or browser tab reload. Storing in <code>localStorage</code> provides persistent session hydration across browser reloads.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q39</span> How does <code>CreateTestModal.jsx</code> handle dynamic headers?</div>
+    <div class="qa-answer">It stores headers as an array of key-value objects in state: <code>[{ key: '', value: '' }]</code>. Users can add or delete rows dynamically. On submit, it converts the array into a clean JSON key-value map before dispatching to the backend API.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q40</span> What is the role of atomic UI components (Button, Input, Card, Badge, Modal)?</div>
+    <div class="qa-answer">Atomic design separates core UI primitives from business logic. Centralizing styles in reusable components ensures consistent dark developer theme aesthetics, standardizes accessibility attributes, and eliminates code duplication across pages.</div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <h2>Category E: Load Testing, k6 & Performance Metrics (Q41–Q50)</h2>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q41</span> What is a Virtual User (VU) and how does it differ from a real user?</div>
+    <div class="qa-answer">A Virtual User is an automated, continuous execution loop running requests against the target. While a real human user clicks once every few seconds and browses, a VU executes requests in rapid succession with zero think-time (unless configured), generating hundreds of times more traffic than a single human.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q42</span> Why is Average Latency considered a misleading metric in load testing?</div>
+    <div class="qa-answer">The "Flaw of Averages": Outliers get washed out. If 95% of users experience 20ms response times, but 5% experience 5000ms timeouts, the average might look acceptable (270ms), masking the fact that 1 in 20 users experiences an unacceptable outage. Percentiles (P95, P99) expose this tail latency.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q43</span> What is the P95 latency percentile?</div>
+    <div class="qa-answer">P95 is the value for which 95% of all measured request latencies were faster, and only 5% were slower. It represents the worst-case experience of typical users and is the industry benchmark for Service Level Agreements (SLAs).</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q44</span> What is Ramp-Up Duration and why is it important?</div>
+    <div class="qa-answer">Ramp-up is the period where VUs are gradually scaled up (e.g. from 1 to 50 VUs over 10 seconds) rather than hitting the target with 50 VUs instantly. It allows database connection pools, thread pools, and caches to warm up, preventing artificial error spikes caused purely by cold-start socket handshakes.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q45</span> What are Thresholds in load testing?</div>
+    <div class="qa-answer">Thresholds are pass/fail criteria (SLOs) defined on metrics. For example: <code>http_req_duration: ['p(95)&lt;200']</code> asserts that 95% of requests must complete under 200ms, and <code>http_req_failed: ['rate&lt;0.01']</code> asserts failure rate must be under 1%. If violated, the test is flagged as failed.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q46</span> Why is k6 superior to JMeter for modern load testing?</div>
+    <div class="qa-answer">k6 is written in Go and compiles to native machine code. It uses lightweight goroutines (each taking ~2KB of memory) rather than heavy Java OS threads (which take 1MB each in JMeter). This allows k6 to generate massive traffic on modest hardware with minimal CPU/RAM consumption and no JVM garbage-collection pauses.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q47</span> What is the difference between Throughput (RPS) and Bandwidth?</div>
+    <div class="qa-answer">Throughput (Requests Per Second) measures the rate of completed application-level HTTP request/response transactions. Bandwidth (MB/s or Mbps) measures the raw volume of physical network data transferred across the wire.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q48</span> What is HTTP Status 429 and what header accompanies it?</div>
+    <div class="qa-answer">HTTP 429 indicates <code>Too Many Requests</code> (rate-limiting). It is accompanied by the <code>Retry-After</code> header, which specifies the number of seconds the client must wait before making new requests.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q49</span> How does APIForge simulate load testing in Stage 6?</div>
+    <div class="qa-answer">In Stage 6, <code>simulateLifecycleRun()</code> executes deterministic lifecycle transitions (<code>queued &rarr; running &rarr; completed</code>) with mathematically calculated metrics (RPS, P90, P95, status code counts) and clearly labels the document with <code>isSimulated: true</code>. This verifies all lifecycle state machines, progress polling, and UI charts before integrating the native k6 binary in Stage 7.</div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question"><span class="qa-badge">Q50</span> What are the 3 key takeaways of the APIForge architecture you would summarize to the examiner?</div>
+    <div class="qa-answer">
+      <strong>1. Resilience:</strong> Strict finite state machine lifecycle with immutable target snapshots, graceful shutdown, and per-user concurrency limits to protect system resources.<br>
+      <strong>2. Security-First:</strong> Multi-layer defense-in-depth including DNS-resolving SSRF filtering, 32-char minimum entropy JWT secrets, automatic password hash exclusion, and aggressive auth rate-limiting.<br>
+      <strong>3. Performance Isolation:</strong> Decoupled dual-server topology separating management operations on Port 5000 from high-throughput benchmarking on Port 5001.
+    </div>
+  </div>
+
+  <div style="margin-top: 30px; padding-top: 14px; border-top: 1px solid #cbd5e1; text-align: center; font-size: 8.5pt; color: #64748b;">
+    <strong>End of APIForge Comprehensive Viva Voce Defense Guide</strong> &bull; Prepared for Academic Capstone Project Evaluation &bull; All 131 Verification Tests Passed
+  </div>
+
+</body>
+</html>

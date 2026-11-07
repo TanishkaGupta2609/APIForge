@@ -61,6 +61,27 @@ export async function deleteTestRun(id) {
 }
 
 /**
+ * Start real k6 load test execution.
+ *
+ * @param {string} id
+ * @returns {Promise<object>}
+ */
+export async function startTestRun(id) {
+  const response = await apiClient.post(`/tests/${id}/start`);
+  return response?.data;
+}
+
+/**
+ * Fetch k6 engine diagnostic status.
+ *
+ * @returns {Promise<object>}
+ */
+export async function getEngineStatus() {
+  const response = await apiClient.get('/tests/engine/status');
+  return response?.data;
+}
+
+/**
  * Trigger controlled lifecycle simulation for Stage 6 verification.
  *
  * @param {string} id
@@ -71,11 +92,25 @@ export async function simulateLifecycleRun(id) {
   return response?.data;
 }
 
+/**
+ * Safely duplicate and queue a rerun of an existing test run.
+ *
+ * @param {string} id
+ * @returns {Promise<object>}
+ */
+export async function rerunTestRun(id) {
+  const response = await apiClient.post(`/tests/${id}/rerun`);
+  return response?.data;
+}
+
 export default {
   getTestRuns,
   getTestRunById,
   createTestRun,
   cancelTestRun,
   deleteTestRun,
+  startTestRun,
+  getEngineStatus,
   simulateLifecycleRun,
+  rerunTestRun,
 };
