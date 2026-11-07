@@ -16,6 +16,7 @@ import {
   Play,
   Download,
   FileCode,
+  FileText,
   ArrowLeftRight,
 } from 'lucide-react';
 import { DashboardShell } from '../../components/layout/DashboardShell.jsx';
@@ -230,6 +231,16 @@ export function ResultsPage() {
                   title="Export results as JSON"
                 >
                   JSON
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleExport('html')}
+                  disabled={isExporting}
+                  leftIcon={<FileText className="h-3.5 w-3.5" />}
+                  title="Export results as self-contained HTML report"
+                >
+                  HTML
                 </Button>
               </>
             )}

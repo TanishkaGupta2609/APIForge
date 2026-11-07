@@ -95,6 +95,8 @@ export function buildK6Script(testConfig) {
     duration = 10,
     rampUpDuration = 0,
     thresholds = {},
+    workloadProfile = 'fixed',
+    stages = null,
   } = testConfig;
 
   if (!targetSnapshot || !targetSnapshot.baseUrl) {
@@ -126,10 +128,49 @@ export function buildK6Script(testConfig) {
     }
   }
 
-  // Construct options object
+  // Construct options object with support for multi-stage workload profiles
   const optionsObj = {};
 
-  if (rampUpDuration > 0 && rampUpDuration < duration) {
+  if (Array.isArray(stages) && stages.length > 0) {
+    optionsObj.stages = stages.map((s) => ({
+      duration: `${s.duration}s`,
+      target: s.target,
+    }));
+  } else if (workloadProfile === 'ramping') {
+    // Multi-stage ramping: Ramp-up -> Steady hold -> Ramp-down
+    const rampUpTime = rampUpDuration > 0 ? rampUpDuration : Math.max(1, Math.round(duration * 0.25));
+    const rampDownTime = Math.max(1, Math.round(duration * 0.2));
+    const steadyTime = Math.max(1, duration - rampUpTime - rampDownTime);
+    optionsObj.stages = [
+      { duration: `${rampUpTime}s`, target: vus },
+      { duration: `${steadyTime}s`, target: vus },
+      { duration: `${rampDownTime}s`, target: 0 },
+    ];
+  } else if (workloadProfile === 'spike') {
+    // Spike profile: Low baseline -> Sharp surge -> Recovery
+    const baselineVus = Math.max(1, Math.round(vus * 0.2));
+    const warmupTime = Math.max(1, Math.round(duration * 0.2));
+    const spikeTime = Math.max(1, Math.round(duration * 0.4));
+    const recoveryTime = Math.max(1, duration - warmupTime - spikeTime);
+    optionsObj.stages = [
+      { duration: `${warmupTime}s`, target: baselineVus },
+      { duration: `${spikeTime}s`, target: vus },
+      { duration: `${recoveryTime}s`, target: baselineVus },
+    ];
+  } else if (workloadProfile === 'stress') {
+    // Stress test: Stepped staircase progression to find breaking capacity
+    const s1 = Math.max(1, Math.round(vus * 0.25));
+    const s2 = Math.max(1, Math.round(vus * 0.5));
+    const s3 = Math.max(1, Math.round(vus * 0.75));
+    const stepTime = Math.max(1, Math.round(duration / 4));
+    const finalTime = Math.max(1, duration - stepTime * 3);
+    optionsObj.stages = [
+      { duration: `${stepTime}s`, target: s1 },
+      { duration: `${stepTime}s`, target: s2 },
+      { duration: `${stepTime}s`, target: s3 },
+      { duration: `${finalTime}s`, target: vus },
+    ];
+  } else if (rampUpDuration > 0 && rampUpDuration < duration) {
     const steadyDuration = duration - rampUpDuration;
     optionsObj.stages = [
       { duration: `${rampUpDuration}s`, target: vus },

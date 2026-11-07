@@ -182,6 +182,8 @@ export async function rerunTest(userId, testRunId) {
       duration: originalRun.configuration.duration,
       rampUpDuration: originalRun.configuration.rampUpDuration || 0,
       thresholds: originalRun.configuration.thresholds || {},
+      workloadProfile: originalRun.configuration.workloadProfile || 'fixed',
+      stages: originalRun.configuration.stages || undefined,
     },
     status: TEST_RUN_STATUS.QUEUED,
     progress: {

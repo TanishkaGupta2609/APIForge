@@ -18,7 +18,7 @@ export const exportQuerySchema = z.object({
   }),
   query: z
     .object({
-      format: z.enum(['json', 'csv']).optional().default('json'),
+      format: z.enum(['json', 'csv', 'html']).optional().default('json'),
     })
     .optional()
     .default({}),
@@ -40,8 +40,31 @@ export const compareQuerySchema = z.object({
     }),
 });
 
+export const trendsQuerySchema = z.object({
+  query: z
+    .object({
+      targetId: z
+        .string()
+        .regex(OBJECT_ID_REGEX, {
+          message: 'targetId must be a valid 24-character hexadecimal ObjectId.',
+        })
+        .optional(),
+      limit: z
+        .string()
+        .optional()
+        .default('10')
+        .transform((val) => parseInt(val, 10))
+        .refine((val) => !isNaN(val) && val >= 2 && val <= 50, {
+          message: 'Limit must be an integer between 2 and 50',
+        }),
+    })
+    .optional()
+    .default({}),
+});
+
 export default {
   runIdParamSchema,
   exportQuerySchema,
   compareQuerySchema,
+  trendsQuerySchema,
 };

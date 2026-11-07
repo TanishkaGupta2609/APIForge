@@ -116,6 +116,73 @@ describe('k6 Script Builder Suite', () => {
       expect(script).toContain('rate<=0.05');
     });
 
+    it('generates multi-stage ramping profile with ramp-up, steady, and ramp-down stages', () => {
+      const rampingConfig = {
+        ...validConfig,
+        duration: 40,
+        vus: 20,
+        workloadProfile: 'ramping',
+      };
+
+      const script = buildK6Script(rampingConfig);
+
+      expect(script).toContain('"stages"');
+      // 3 stages: ramp-up, steady, ramp-down to 0
+      expect(script).toContain('"target": 20');
+      expect(script).toContain('"target": 0');
+    });
+
+    it('generates spike workload profile with baseline, spike surge, and recovery stages', () => {
+      const spikeConfig = {
+        ...validConfig,
+        duration: 30,
+        vus: 40,
+        workloadProfile: 'spike',
+      };
+
+      const script = buildK6Script(spikeConfig);
+
+      expect(script).toContain('"stages"');
+      expect(script).toContain('"target": 40');
+      // Baseline VUs (40 * 0.2 = 8)
+      expect(script).toContain('"target": 8');
+    });
+
+    it('generates stress test profile with stepped staircase increments', () => {
+      const stressConfig = {
+        ...validConfig,
+        duration: 40,
+        vus: 40,
+        workloadProfile: 'stress',
+      };
+
+      const script = buildK6Script(stressConfig);
+
+      expect(script).toContain('"stages"');
+      expect(script).toContain('"target": 10'); // 25%
+      expect(script).toContain('"target": 20'); // 50%
+      expect(script).toContain('"target": 30'); // 75%
+      expect(script).toContain('"target": 40'); // 100%
+    });
+
+    it('generates custom stages when explicit stages array is configured', () => {
+      const customConfig = {
+        ...validConfig,
+        stages: [
+          { duration: 5, target: 10 },
+          { duration: 15, target: 30 },
+          { duration: 5, target: 0 },
+        ],
+      };
+
+      const script = buildK6Script(customConfig);
+
+      expect(script).toContain('"stages"');
+      expect(script).toContain('"duration": "5s"');
+      expect(script).toContain('"duration": "15s"');
+      expect(script).toContain('"target": 30');
+    });
+
     it('safely handles POST methods with request body and Content-Type', () => {
       const postConfig = {
         ...validConfig,

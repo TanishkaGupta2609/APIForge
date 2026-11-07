@@ -5,6 +5,7 @@ import {
   runIdParamSchema,
   exportQuerySchema,
   compareQuerySchema,
+  trendsQuerySchema,
 } from './results.validation.js';
 import * as resultsController from './results.controller.js';
 
@@ -15,6 +16,13 @@ router.use(authenticate);
 
 // Aggregated dashboard performance metrics across runs
 router.get('/dashboard/summary', resultsController.getDashboardSummary);
+
+// Historical performance trends (placed before /:runId)
+router.get(
+  '/trends',
+  validateRequest(trendsQuerySchema),
+  resultsController.getPerformanceTrends
+);
 
 // Compare two test runs side-by-side (placed before /:runId)
 router.get(

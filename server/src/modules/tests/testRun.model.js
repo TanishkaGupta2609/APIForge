@@ -91,6 +91,25 @@ const testRunSchema = new mongoose.Schema(
         httpReqDurationP95: { type: Number, default: null },
         httpReqFailedRate: { type: Number, default: null },
       },
+      workloadProfile: {
+        type: String,
+        enum: ['fixed', 'ramping', 'spike', 'stress'],
+        default: 'fixed',
+      },
+      stages: {
+        type: [
+          {
+            duration: { type: Number, required: true },
+            target: { type: Number, required: true },
+          },
+        ],
+        default: undefined,
+      },
+    },
+    thresholdEvaluation: {
+      hasThresholds: { type: Boolean, default: false },
+      allPassed: { type: Boolean, default: null },
+      rules: { type: Array, default: [] },
     },
     status: {
       type: String,
@@ -128,6 +147,7 @@ const testRunSchema = new mongoose.Schema(
       maxLatency: { type: Number, default: null },
       failureRate: { type: Number, default: null },
       networkErrors: { type: Number, default: null },
+      thresholdsPassed: { type: Boolean, default: null },
       statusCodeCounts: {
         type: Map,
         of: Number,

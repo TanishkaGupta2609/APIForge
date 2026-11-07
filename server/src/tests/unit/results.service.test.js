@@ -8,6 +8,7 @@ import {
   calculateDelta,
   exportResult,
   compareTestRuns,
+  getPerformanceTrends,
 } from '../../modules/results/results.service.js';
 import TestRun from '../../modules/tests/testRun.model.js';
 import { NotFoundError, ForbiddenError } from '../../shared/errors/AppError.js';
@@ -259,6 +260,22 @@ describe('Results Analytics & Chart Formatting Service Suite', () => {
       expect(result.data).toContain('Average Response Time,38.40,ms');
     });
 
+    it('exports standalone, self-contained HTML performance report', async () => {
+      TestRun.findById = vi.fn().mockReturnValue({
+        populate: vi.fn().mockResolvedValue(mockRun),
+      });
+
+      const result = await exportResult(mockUserId, mockRunId, 'html');
+
+      expect(result.contentType).toBe('text/html; charset=utf-8');
+      expect(result.filename).toBe(`apiforge-test-${mockRunId}.html`);
+      expect(result.data).toContain('<!DOCTYPE html>');
+      expect(result.data).toContain('APIForge');
+      expect(result.data).toContain('API Stress Test');
+      expect(result.data).toContain('500'); // total requests
+      expect(result.data).toContain('Response Time Percentiles');
+    });
+
     it('rejects export if user does not own test run', async () => {
       TestRun.findById = vi.fn().mockReturnValue({
         populate: vi.fn().mockResolvedValue({
@@ -395,6 +412,70 @@ describe('Results Analytics & Chart Formatting Service Suite', () => {
         .mockReturnValueOnce({ populate: vi.fn().mockResolvedValue(foreignRun) });
 
       await expect(compareTestRuns(mockUserId, baseId, compId)).rejects.toThrow(ForbiddenError);
+    });
+  });
+
+  describe('getPerformanceTrends()', () => {
+    const mockUserId = '507f1f77bcf86cd799439011';
+
+    it('returns empty trends response when no completed runs exist', async () => {
+      TestRun.find = vi.fn().mockReturnValue({
+        sort: vi.fn().mockReturnValue({
+          limit: vi.fn().mockReturnValue({
+            populate: vi.fn().mockResolvedValue([]),
+          }),
+        }),
+      });
+
+      const trends = await getPerformanceTrends(mockUserId);
+      expect(trends.trends).toEqual([]);
+      expect(trends.summary.totalRunsAnalyzed).toBe(0);
+      expect(trends.summary.avgThroughput).toBeNull();
+    });
+
+    it('aggregates trends and calculates throughput and latency deltas', async () => {
+      const run1 = {
+        _id: 'run-1',
+        name: 'Benchmark 1',
+        createdAt: new Date('2026-11-01T10:00:00Z'),
+        configuration: { vus: 10, duration: 10, targetSnapshot: { name: 'Demo API' } },
+        metrics: { totalRequests: 200, requestsPerSecond: 20.0, avgLatency: 50.0, p95Latency: 60.0, failureRate: 0.01 },
+        toJSON: function () { return { ...this }; },
+      };
+      const run2 = {
+        _id: 'run-2',
+        name: 'Benchmark 2',
+        createdAt: new Date('2026-11-02T10:00:00Z'),
+        configuration: { vus: 10, duration: 10, targetSnapshot: { name: 'Demo API' } },
+        metrics: { totalRequests: 300, requestsPerSecond: 30.0, avgLatency: 40.0, p95Latency: 48.0, failureRate: 0.0 },
+        toJSON: function () { return { ...this }; },
+      };
+
+      // Mock returns newest first (run2, then run1)
+      TestRun.find = vi.fn().mockReturnValue({
+        sort: vi.fn().mockReturnValue({
+          limit: vi.fn().mockReturnValue({
+            populate: vi.fn().mockResolvedValue([run2, run1]),
+          }),
+        }),
+      });
+
+      const res = await getPerformanceTrends(mockUserId, { limit: 10 });
+
+      expect(res.trends.length).toBe(2);
+      // Chronological ascending order
+      expect(res.trends[0].runId).toBe('run-1');
+      expect(res.trends[1].runId).toBe('run-2');
+
+      expect(res.summary.totalRunsAnalyzed).toBe(2);
+      expect(res.summary.avgThroughput).toBe(25.0);
+      expect(res.summary.avgLatency).toBe(45.0);
+      expect(res.summary.avgP95Latency).toBe(54.0);
+
+      // Throughput increased from 20 to 30 -> +50%
+      expect(res.summary.throughputDeltaPct).toBe(50.0);
+      // Latency decreased from 50 to 40 -> -20%
+      expect(res.summary.latencyDeltaPct).toBe(-20.0);
     });
   });
 });

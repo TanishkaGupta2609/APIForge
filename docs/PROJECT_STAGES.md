@@ -20,8 +20,8 @@ This document tracks the progress of the staged implementation plan defined in `
 | **Stage 9** | Test history & filtering | **Completed** | ✅ Yes |
 | **Stage 10** | Comparison and exports (CSV/JSON) | **Completed** | ✅ Yes |
 | **Stage 11** | Security and reliability hardening | **Completed** | ✅ Yes |
-| **Stage 12** | Advanced features | **Pending** | ⏳ Next |
-| **Stage 13** | Final verification and presentation | **Pending** | ⏳ |
+| **Stage 12** | Advanced features | **Completed** | ✅ Yes |
+| **Stage 13** | Final verification and presentation | **Pending** | ⏳ Next |
 
 ---
 
@@ -225,6 +225,35 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Monorepo test suite verification: 37 test files, 261 passing tests with 0 failures.
 - [x] Linting verification with 0 errors and 0 warnings across monorepo (`npm run lint`).
 - [x] Production build verification (`npm run build` completed cleanly).
+
+### Stage 12: Advanced Capabilities (Completed)
+- [x] Multi-stage workload profiles:
+  - Supported profiles in test configuration: `fixed` (constant load), `ramping` (ramp-up, hold, ramp-down), `spike` (low baseline with sudden surge), `stress` (stepped capacity curve), and customizable `stages` array.
+  - Script generator dynamically builds k6 `stages` array with accurate durations and target VUs.
+  - Interactive profile preset cards integrated into `CreateTestModal.jsx`.
+- [x] SLA threshold failure detection:
+  - Backend `k6Runner.js` automatically checks configured thresholds on test completion.
+  - Records `thresholdEvaluation` breakdown and `thresholdsPassed` status flag in metrics and test run document.
+- [x] Historical performance trends API:
+  - `GET /api/results/trends` endpoint with query validation (`trendsQuerySchema`).
+  - Supports optional `targetId` filtering and configurable sample limit (2-50 runs).
+  - Calculates throughput delta percentage, latency delta percentage, and aggregate averages across chronological test series.
+  - Multi-series `PerformanceTrendsChart.jsx` displaying Throughput (RPS), Avg Latency, and p95 Latency trajectories on `DashboardPage.jsx`.
+- [x] Standalone HTML performance report export:
+  - Self-contained, responsive, print-ready HTML benchmark report generator (`generateHtmlReport`).
+  - Dark-themed design with high-contrast KPI cards, percentiles breakdown, status code distribution, SLA threshold audit, and redacted configuration headers.
+  - Supported via `GET /api/results/:runId/export?format=html` with automatic download triggers in `ResultsPage.jsx` and `HistoryPage.jsx`.
+- [x] Docker Compose & multi-container deployment:
+  - `server/Dockerfile` with Node.js 20 and official static k6 CLI binary.
+  - `client/Dockerfile` with multi-stage build (Vite + Nginx alpine) and `client/nginx.conf` reverse proxy.
+  - Root `docker-compose.yml` coordinating MongoDB, APIForge Server, and APIForge Client.
+  - `.dockerignore` file and comprehensive deployment guide in `docs/DEPLOYMENT.md`.
+- [x] Automated unit and integration tests:
+  - Unit tests: `scriptBuilder.test.js` (17 passing, verifying ramping, spike, stress, and custom stages), `results.service.test.js` (25 passing, verifying HTML report generation and trend deltas).
+  - Integration tests: `advancedFeatures.test.js` (7 passing, testing workload profiles, HTML export, trends API, and tenant isolation).
+- [x] Monorepo test suite verification: 38 test files, 275 passing tests with 0 failures.
+- [x] Static analysis: 0 ESLint errors and 0 warnings across entire monorepo.
+- [x] Production build: clean production build completed in under 10 seconds.
 ---
 
 ## 📌 Rules for Stage Progression

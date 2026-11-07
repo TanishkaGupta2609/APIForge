@@ -23,6 +23,7 @@ export function CreateTestModal({ isOpen, onClose, onTestCreated }) {
   const [vus, setVus] = useState(10);
   const [duration, setDuration] = useState(30);
   const [rampUpDuration, setRampUpDuration] = useState(5);
+  const [workloadProfile, setWorkloadProfile] = useState('fixed');
   const [showThresholds, setShowThresholds] = useState(false);
   const [p95Threshold, setP95Threshold] = useState('');
   const [failedRateThreshold, setFailedRateThreshold] = useState('');
@@ -122,6 +123,7 @@ export function CreateTestModal({ isOpen, onClose, onTestCreated }) {
       vus: Number(vus),
       duration: Number(duration),
       rampUpDuration: Number(rampUpDuration),
+      workloadProfile,
       thresholds,
     };
 
@@ -307,9 +309,36 @@ export function CreateTestModal({ isOpen, onClose, onTestCreated }) {
 
         {/* Workload Sliders (VUs, Duration, Ramp-up) */}
         <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-4">
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 uppercase tracking-wider">
-            <Sliders className="h-4 w-4 text-indigo-400" />
-            <span>Workload Profile (Authoritative Limits Enforced)</span>
+          <div className="flex items-center justify-between text-xs font-semibold text-slate-300 uppercase tracking-wider">
+            <div className="flex items-center gap-2">
+              <Sliders className="h-4 w-4 text-indigo-400" />
+              <span>Workload Profile & Simulation Model</span>
+            </div>
+            <span className="text-[10px] text-slate-500 font-mono">Max 50 VUs • 300s</span>
+          </div>
+
+          {/* Profile Preset Selector */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {[
+              { id: 'fixed', label: 'Constant Load', desc: 'Steady sustained VUs' },
+              { id: 'ramping', label: 'Ramping', desc: 'Ramp-up, hold & down' },
+              { id: 'spike', label: 'Spike Test', desc: 'Sudden high surge' },
+              { id: 'stress', label: 'Stress Test', desc: 'Stepped capacity curve' },
+            ].map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setWorkloadProfile(p.id)}
+                className={`p-2 rounded-lg border text-left transition-all ${
+                  workloadProfile === p.id
+                    ? 'bg-indigo-950/70 border-indigo-500 text-white shadow-sm shadow-indigo-900/50'
+                    : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
+                }`}
+              >
+                <div className="text-xs font-semibold">{p.label}</div>
+                <div className="text-[10px] text-slate-500">{p.desc}</div>
+              </button>
+            ))}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

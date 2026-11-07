@@ -91,6 +91,22 @@ export const createTestSchema = z.object({
         })
         .optional()
         .default({}),
+      workloadProfile: z
+        .enum(['fixed', 'ramping', 'spike', 'stress'])
+        .optional()
+        .default('fixed'),
+      stages: z
+        .array(
+          z.object({
+            duration: z.number().int().positive('Stage duration must be a positive integer in seconds'),
+            target: z
+              .number()
+              .int()
+              .min(0, 'Target VUs cannot be negative')
+              .max(TEST_CONSTRAINTS.MAX_VUS, `Target VUs cannot exceed ${TEST_CONSTRAINTS.MAX_VUS}`),
+          })
+        )
+        .optional(),
     })
     .refine((data) => data.rampUpDuration < data.duration, {
       message: 'Ramp-up duration must be strictly less than the total test duration',

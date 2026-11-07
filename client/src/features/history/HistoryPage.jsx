@@ -16,6 +16,7 @@ import {
   RefreshCw,
   X,
   Play,
+  Download,
 } from 'lucide-react';
 import { DashboardShell } from '../../components/layout/DashboardShell.jsx';
 import { Card, CardContent } from '../../components/ui/Card.jsx';
@@ -26,6 +27,7 @@ import { Skeleton } from '../../components/ui/Skeleton.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
 import historyService from '../../services/historyService.js';
 import targetService from '../../services/targetService.js';
+import resultService from '../../services/resultService.js';
 
 export function HistoryPage() {
   // Search input and target ID accessibility IDs
@@ -602,15 +604,26 @@ export function HistoryPage() {
 
                             {/* Compare Run */}
                             {run.status === 'completed' && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                to={`/compare?baseRunId=${runId}`}
-                                className="h-7 w-7 p-0 text-slate-400 hover:text-amber-400"
-                                title="Compare against another run"
-                              >
-                                <ArrowLeftRight className="h-3.5 w-3.5" />
-                              </Button>
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  to={`/compare?baseRunId=${runId}`}
+                                  className="h-7 w-7 p-0 text-slate-400 hover:text-amber-400"
+                                  title="Compare against another run"
+                                >
+                                  <ArrowLeftRight className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => resultService.exportResult(runId, 'html')}
+                                  className="h-7 w-7 p-0 text-slate-400 hover:text-cyan-400"
+                                  title="Download standalone HTML performance report"
+                                >
+                                  <Download className="h-3.5 w-3.5" />
+                                </Button>
+                              </>
                             )}
 
                             {/* Safe Re-run */}

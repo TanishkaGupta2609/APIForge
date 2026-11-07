@@ -5,6 +5,7 @@ import TestRun, { TEST_RUN_STATUS } from '../modules/tests/testRun.model.js';
 import { checkK6Installed } from './k6Detector.js';
 import { buildK6Script } from './scriptBuilder.js';
 import { parseK6Summary } from './summaryParser.js';
+import { evaluateThresholds } from '../modules/results/results.service.js';
 import processManager from './processManager.js';
 import { BadRequestError, NotFoundError } from '../shared/errors/AppError.js';
 
@@ -209,6 +210,16 @@ export async function executeTestRun(testRunId) {
         });
         currentDoc.metrics = normalizedMetrics;
       } else {
+        // Evaluate SLA thresholds if configured
+        const thresholdEval = evaluateThresholds(
+          currentDoc.configuration?.thresholds,
+          normalizedMetrics
+        );
+        if (thresholdEval.hasThresholds) {
+          normalizedMetrics.thresholdsPassed = thresholdEval.allPassed;
+          currentDoc.thresholdEvaluation = thresholdEval;
+        }
+
         // Successful execution with real metrics
         currentDoc.transitionTo(TEST_RUN_STATUS.COMPLETED, {
           metrics: normalizedMetrics,

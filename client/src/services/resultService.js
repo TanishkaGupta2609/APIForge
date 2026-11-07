@@ -36,10 +36,10 @@ export async function compareRuns(baseRunId, compareRunId) {
 }
 
 /**
- * Export test run results as CSV or JSON and trigger client-side download.
+ * Export test run results as CSV, JSON, or HTML and trigger client-side download.
  *
  * @param {string} runId - Test run ID
- * @param {'json'|'csv'} format - Export format
+ * @param {'json'|'csv'|'html'} format - Export format
  * @returns {Promise<boolean>}
  */
 export async function exportResult(runId, format = 'json') {
@@ -48,7 +48,12 @@ export async function exportResult(runId, format = 'json') {
     responseType: 'blob',
   });
 
-  const mimeType = format === 'csv' ? 'text/csv;charset=utf-8;' : 'application/json';
+  const mimeType =
+    format === 'csv'
+      ? 'text/csv;charset=utf-8;'
+      : format === 'html'
+      ? 'text/html;charset=utf-8;'
+      : 'application/json';
   const BlobClass = window.Blob || globalThis.Blob;
   const blob = new BlobClass([response.data || response], { type: mimeType });
   const downloadUrl = window.URL.createObjectURL(blob);
@@ -63,9 +68,25 @@ export async function exportResult(runId, format = 'json') {
   return true;
 }
 
+/**
+ * Retrieve historical performance trends across user test runs.
+ *
+ * @param {string} [targetId] - Optional Target API ID filter
+ * @param {number} [limit=10] - Number of runs to analyze
+ * @returns {Promise<object>}
+ */
+export async function getPerformanceTrends(targetId, limit = 10) {
+  const params = {};
+  if (targetId) params.targetId = targetId;
+  if (limit) params.limit = limit;
+  const response = await apiClient.get('/results/trends', { params });
+  return response?.data;
+}
+
 export default {
   getResultByRunId,
   getDashboardSummary,
   compareRuns,
   exportResult,
+  getPerformanceTrends,
 };

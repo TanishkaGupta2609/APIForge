@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # MongoDB Database Service
+  mongo:
+    image: mongo:7.0
+    container_name: apiforge-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # APIForge Backend API & k6 Engine
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: apiforge-server
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongo:27017/apiforge
+      - JWT_SECRET=apiforge-production-docker-jwt-secret-min32chars!
+      - CLIENT_URL=http://localhost:3000
+      - K6_BIN_PATH=/usr/local/bin/k6
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  # APIForge Frontend Single-Page Application (Nginx)
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: apiforge-client
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+
+volumes:
+  mongo-data:
+    driver: local
+

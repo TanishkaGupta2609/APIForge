@@ -69,9 +69,27 @@ export async function compareTestRuns(req, res, next) {
   }
 }
 
+/**
+ * Retrieve historical performance trends across test runs.
+ * GET /api/results/trends
+ */
+export async function getPerformanceTrends(req, res, next) {
+  try {
+    const trends = await resultsService.getPerformanceTrends(req.user._id, req.query);
+    return sendSuccess(
+      res,
+      trends,
+      'Historical performance trends retrieved successfully'
+    );
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   getResultByRunId,
   getDashboardSummary,
   exportResult,
   compareTestRuns,
+  getPerformanceTrends,
 };

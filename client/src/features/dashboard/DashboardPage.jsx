@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Server, Play, Clock, ArrowRight, ShieldCheck, BarChart2 } from 'lucide-react';
+import { Server, Play, Clock, ArrowRight, ShieldCheck, BarChart2, Activity } from 'lucide-react';
 import { DashboardShell } from '../../components/layout/DashboardShell.jsx';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Badge } from '../../components/ui/Badge.jsx';
+import PerformanceTrendsChart from '../../components/charts/PerformanceTrendsChart.jsx';
 import resultService from '../../services/resultService.js';
 
 export function DashboardPage() {
   const [summary, setSummary] = useState(null);
+  const [trendsData, setTrendsData] = useState([]);
 
   useEffect(() => {
-    resultService
-      .getDashboardSummary()
-      .then((data) => {
-        setSummary(data);
+    Promise.all([
+      resultService.getDashboardSummary(),
+      resultService.getPerformanceTrends(),
+    ])
+      .then(([summaryData, trendsRes]) => {
+        if (summaryData) setSummary(summaryData);
+        if (trendsRes?.trends) setTrendsData(trendsRes.trends);
       })
       .catch(() => {});
   }, []);
@@ -92,6 +97,31 @@ export function DashboardPage() {
             );
           })}
         </div>
+
+        {/* Performance Trends Over Time */}
+        {trendsData.length > 1 && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-indigo-400" />
+                  <span>Historical Performance Trends</span>
+                </CardTitle>
+                <CardDescription>
+                  Throughput (req/s) and latency (Avg &amp; p95) trajectory across recent benchmark runs
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-2 font-mono text-xs text-slate-400">
+                <span className="px-2 py-0.5 rounded bg-slate-800 border border-slate-700/80">
+                  {trendsData.length} runs analyzed
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <PerformanceTrendsChart data={trendsData} />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Quick Launch & Recent Runs */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

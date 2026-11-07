@@ -203,3 +203,50 @@ dist/assets/index-D_MaqjKS.js   147.26 kB │ gzip: 47.41 kB
 **Command:** `npm run build`  
 **Results:** Production bundle built cleanly in 13.85s without errors.
 
+---
+
+## 🚀 Stage 12: Advanced Capabilities Test Verification
+
+### 1. Monorepo Vitest Execution Summary
+**Execution Date:** 2026-11-07  
+**Command:** `npm test`  
+**Test Suites:** 38 passed (38 total)  
+**Total Tests:** 275 passed (275 total)  
+**Failures / Regressions:** 0  
+
+- **Server (`apiforge-server`):** 27 test files, 229 tests passing.
+- **Client (`apiforge-client`):** 11 test files, 46 tests passing.
+
+### 2. Stage 12 Integration Suite (`advancedFeatures.test.js`)
+**Test Suite:** `server/src/tests/integration/advancedFeatures.test.js` (7 passing)
+- ✅ `Workload Profiles & Multi-Stage Configuration`:
+  - Successfully creates and persists test run with `workloadProfile: 'ramping'`.
+  - Successfully creates and persists test run with `workloadProfile: 'spike'`.
+  - Successfully creates and persists test run with `workloadProfile: 'stress'` and custom `stages` array.
+- ✅ `Standalone HTML Performance Report Export`:
+  - Generates self-contained HTML document with `<!DOCTYPE html>`, metric summary cards, percentiles table, status code breakdown, and SLA audit table.
+  - Returns `Content-Type: text/html; charset=utf-8` and `Content-Disposition: attachment; filename="apiforge-test-<id>.html"`.
+  - Verifies that sensitive authorization tokens and secrets are redacted from exported HTML.
+  - Enforces tenant isolation: User B cannot export User A test results in HTML format (403 Forbidden).
+- ✅ `Historical Performance Trends API (/api/results/trends)`:
+  - Retrieves chronological test run progression (oldest to newest).
+  - Calculates throughput delta percentage and latency delta percentage between boundary runs.
+  - Aggregates average throughput, average latency, and p95 latency.
+  - Strictly enforces tenant isolation on trends queries.
+
+### 3. Stage 12 Unit Test Extensions
+- ✅ `scriptBuilder.test.js` (+4 tests, 17 total passing):
+  - Validates k6 script options for `ramping` profile (ramp-up, hold, ramp-down).
+  - Validates k6 script options for `spike` profile (baseline, surge, recovery).
+  - Validates k6 script options for `stress` profile (stepped increments 25%, 50%, 75%, 100%).
+  - Validates custom `stages` configuration mapping.
+- ✅ `results.service.test.js` (+3 tests, 25 total passing):
+  - Validates `exportResult(..., 'html')` output structure and metadata.
+  - Validates `getPerformanceTrends` with empty database.
+  - Validates `getPerformanceTrends` delta calculations (+50% throughput, -20% latency).
+
+### 4. Static Analysis & Build Verification
+- **ESLint:** 0 errors, 0 warnings across monorepo (`npm run lint`).
+- **Client Production Build:** Vite build succeeded in 8.96s (`npm run build`).
+
+

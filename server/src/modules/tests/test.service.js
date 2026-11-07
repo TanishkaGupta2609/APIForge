@@ -84,6 +84,8 @@ export async function createTestRun(userId, input) {
       duration: input.duration,
       rampUpDuration: input.rampUpDuration || 0,
       thresholds: input.thresholds || {},
+      workloadProfile: input.workloadProfile || 'fixed',
+      stages: input.stages || undefined,
     },
     status: TEST_RUN_STATUS.QUEUED,
     progress: {
