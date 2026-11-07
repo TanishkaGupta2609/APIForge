@@ -3,6 +3,32 @@ import { validateTargetUrl } from '../../shared/utils/ssrfFilter.js';
 import { NotFoundError } from '../../shared/errors/AppError.js';
 
 /**
+ * Sanitizes target object to prevent leaking secret header values.
+ *
+ * @param {object} target - Target document or plain object
+ * @returns {object} Sanitized target object
+ */
+export function sanitizeTarget(target) {
+  if (!target) return target;
+  const clone = typeof target.toJSON === 'function' ? target.toJSON() : { ...target };
+  if (Array.isArray(clone.defaultHeaders)) {
+    clone.defaultHeaders = clone.defaultHeaders.map((h) => {
+      const isSensitive =
+        h.isSecret ||
+        /^(authorization|cookie|set-cookie|x-api-key|api-key|secret|token|password|auth)$/i.test(
+          h.key?.trim() || ''
+        );
+      return {
+        key: h.key,
+        value: isSensitive ? '[REDACTED]' : h.value,
+        isSecret: Boolean(h.isSecret || isSensitive),
+      };
+    });
+  }
+  return clone;
+}
+
+/**
  * List all targets owned by the user.
  *
  * @param {string} userId
@@ -10,7 +36,7 @@ import { NotFoundError } from '../../shared/errors/AppError.js';
  */
 export async function listTargets(userId) {
   const targets = await Target.find({ owner: userId }).sort({ createdAt: -1 });
-  return targets.map((t) => t.toJSON());
+  return targets.map((t) => sanitizeTarget(t));
 }
 
 /**
@@ -36,7 +62,7 @@ export async function createTarget(userId, input) {
     defaultHeaders: input.defaultHeaders || [],
   });
 
-  return target.toJSON();
+  return sanitizeTarget(target);
 }
 
 /**
@@ -51,7 +77,7 @@ export async function getTargetById(userId, targetId) {
   if (!target) {
     throw new NotFoundError('Target not found or access unauthorized.');
   }
-  return target.toJSON();
+  return sanitizeTarget(target);
 }
 
 /**
@@ -75,10 +101,22 @@ export async function updateTarget(userId, targetId, updates) {
 
   if (updates.name !== undefined) target.name = updates.name.trim();
   if (updates.description !== undefined) target.description = updates.description.trim();
-  if (updates.defaultHeaders !== undefined) target.defaultHeaders = updates.defaultHeaders;
+  if (updates.defaultHeaders !== undefined) {
+    // Preserve existing secret values if frontend sends back the redaction mask
+    const existingHeaders = target.defaultHeaders || [];
+    target.defaultHeaders = updates.defaultHeaders.map((h) => {
+      if (h.isSecret && (h.value === '[REDACTED]' || h.value === '••••••••')) {
+        const existing = existingHeaders.find((oldH) => oldH.key === h.key);
+        if (existing) {
+          return { key: h.key, value: existing.value, isSecret: true };
+        }
+      }
+      return h;
+    });
+  }
 
   await target.save();
-  return target.toJSON();
+  return sanitizeTarget(target);
 }
 
 /**

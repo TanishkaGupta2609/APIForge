@@ -1,6 +1,7 @@
 import TestRun, { TEST_RUN_STATUS } from '../tests/testRun.model.js';
 import Target from '../targets/target.model.js';
 import { TEST_CONSTRAINTS } from '../tests/test.validation.js';
+import { sanitizeTestRun } from '../tests/test.service.js';
 import {
   BadRequestError,
   NotFoundError,
@@ -97,7 +98,7 @@ export async function getTestHistory(
     .populate('target', 'name baseUrl');
 
   return {
-    testRuns: testRuns.map((r) => r.toJSON()),
+    testRuns: testRuns.map((r) => sanitizeTestRun(r.toJSON())),
     pagination: {
       page: safePage,
       limit,

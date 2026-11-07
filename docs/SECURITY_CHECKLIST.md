@@ -20,10 +20,12 @@ This living checklist tracks the verification status of all security controls ac
 | **API Rate Limiting** | Throttling requests to prevent resource starvation | Stage 1 | `server/src/middleware/rateLimiter.js` | ✅ **Passed** |
 | **Bcrypt Password Hashing** | Store passwords as salted bcrypt hashes (>=10 rounds) | Stage 3 | `server/src/tests/unit/user.model.test.js` & `server/src/tests/integration/auth.test.js` | ✅ **Passed** |
 | **JWT Authentication & Protection** | Verify Bearer JWT tokens, reject tampered/expired tokens, exclude passwordHash | Stage 3 | `server/src/tests/unit/authenticate.test.js` & `server/src/tests/integration/auth.test.js` | ✅ **Passed** |
-
-| **Ownership Authorization** | Scoped queries preventing unauthorized cross-user access | Stage 4 | `server/src/tests/integration/target.test.js` | ✅ **Passed** |
-| **SSRF Address Filter** | Block private, loopback, and cloud metadata IP destinations | Stage 4 | `server/src/tests/unit/ssrfFilter.test.js` & `server/src/tests/integration/target.test.js` | ✅ **Passed** |
-
-| **Safe Process Invocation** | Use argument arrays with `spawn` without shell interpolation | Stage 7 | Pending Stage 7 implementation | ⏳ Pending |
-| **Hard Concurrency Caps** | Enforce maximum concurrent active tests per instance | Stage 7 | Pending Stage 7 implementation | ⏳ Pending |
-| **Sensitive Header Masking**| Redact secrets in target configs and exported results | Stage 10 | Pending Stage 10 implementation | ⏳ Pending |
+| **Ownership Authorization (BOLA/IDOR)** | Scoped queries preventing unauthorized cross-user access | Stage 4 & 11 | `server/src/tests/integration/target.test.js` & `securityHardening.test.js` | ✅ **Passed** |
+| **SSRF Multi-Layer Filtering** | Block private RFC 1918, loopback, and cloud metadata (`169.254.169.254`) destinations | Stage 4 & 11 | `server/src/tests/unit/ssrfFilter.test.js` & `securityHardening.test.js` | ✅ **Passed** |
+| **Safe Process Invocation** | Use argument arrays with `spawn` without shell interpolation | Stage 7 & 11 | `server/src/load-testing/processManager.js` & `processManager.test.js` | ✅ **Passed** |
+| **Script Injection Immunity** | Serialize URL, headers, and body into k6 script constants via `JSON.stringify` | Stage 7 & 11 | `server/src/load-testing/scriptBuilder.js` & `securityHardening.test.js` | ✅ **Passed** |
+| **ReDoS Query Defense** | Escape special regex characters in history and target search inputs | Stage 9 & 11 | `history.service.js` & `securityHardening.test.js` | ✅ **Passed** |
+| **Hard Concurrency Caps** | Enforce maximum 2 concurrent active tests per user (`MAX_CONCURRENT_RUNS_PER_USER`) | Stage 7 & 11 | `test.service.js`, `history.service.js`, `securityHardening.test.js` | ✅ **Passed** |
+| **Secret Redaction Across Layers**| Redact Authorization, Cookie, API keys in targets, tests, results, history, and exports | Stage 10 & 11 | `results.service.js`, `test.service.js`, `target.service.js`, `securityHardening.test.js` | ✅ **Passed** |
+| **Process Tree Termination** | Clean process killing with Windows `taskkill /pid <PID> /T /F` & POSIX `SIGKILL` | Stage 7 & 11 | `server/src/load-testing/processManager.js` | ✅ **Passed** |
+| **Crash Recovery & Reconciliation**| Detect interrupted test runs on reboot and reconcile to `FAILED` with `INTERNAL_ERROR` | Stage 7 & 11 | `server/src/load-testing/reconciler.js` & `securityHardening.test.js` | ✅ **Passed** |

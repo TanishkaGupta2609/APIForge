@@ -19,9 +19,8 @@ This document tracks the progress of the staged implementation plan defined in `
 | **Stage 8** | Results dashboard & charts | **Completed** | ✅ Yes |
 | **Stage 9** | Test history & filtering | **Completed** | ✅ Yes |
 | **Stage 10** | Comparison and exports (CSV/JSON) | **Completed** | ✅ Yes |
-
-| **Stage 11** | Security and reliability hardening | **Pending** | ⏳ Next |
-| **Stage 12** | Advanced features | **Pending** | ⏳ |
+| **Stage 11** | Security and reliability hardening | **Completed** | ✅ Yes |
+| **Stage 12** | Advanced features | **Pending** | ⏳ Next |
 | **Stage 13** | Final verification and presentation | **Pending** | ⏳ |
 
 ---
@@ -199,6 +198,33 @@ This document tracks the progress of the staged implementation plan defined in `
 - [x] Automated unit tests (`results.service.test.js`: 22 passing).
 - [x] Automated backend integration tests (`results.test.js`: 13 passing, verifying JSON export with header redaction, CSV export formatting, unauthorized export blocking, and side-by-side run comparisons).
 - [x] Automated frontend component tests (`compare.test.jsx`: 3 passing, verifying selector changes, swap handling, delta rendering, and empty state).
+
+### Stage 11: Security and Reliability Hardening (Completed)
+- [x] Full attack surface review & authorization enforcement:
+  - Strict BOLA/IDOR protection verifying tenant isolation across all resources (targets, tests, results, history, exports, comparisons).
+  - Unauthenticated access and token forgery rejections (invalid format, wrong secret, expired token).
+  - Privacy of credentials: User password hashes never returned across `/api/auth/me`, `/register`, or `/login`.
+- [x] Multi-layer SSRF defenses:
+  - Private RFC 1918 IPv4 ranges blocked (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16).
+  - Cloud metadata endpoints blocked (169.254.169.254).
+  - Loopback addresses blocked unless specifically pointing to the authorized Demo API port (5001).
+  - Non-HTTP/HTTPS protocols blocked (file://, ftp://, gopher://).
+- [x] Injection and DoS defenses:
+  - k6 script injection immunity: all URLs, HTTP methods, headers, and request payloads safely JSON-serialized into script constants.
+  - ReDoS defense: regex metacharacters sanitized in search endpoints (`history.service.js`).
+- [x] Secret & authentication hardening:
+  - Target default headers masked (`isSecret: true` or sensitive keys) as `[REDACTED]` in API responses.
+  - Safe editing pattern preserving stored secrets when clients send masked values back.
+  - Test run configuration headers masked as `[REDACTED]` across test runs, history, results, and exports.
+- [x] Concurrency and resource limits:
+  - Enforced hard limit of 2 concurrent active tests per user (`MAX_CONCURRENT_RUNS_PER_USER`) with HTTP 409 Conflict.
+- [x] Process lifecycle and crash recovery:
+  - Process tree termination (`taskkill /pid <PID> /T /F` on Windows, POSIX `SIGKILL`).
+  - Startup reconciler (`reconcileInterruptedRuns()`) automatically recovering orphaned `RUNNING` or `QUEUED` runs after server crash/reboot to `FAILED` with `INTERNAL_ERROR`.
+- [x] Comprehensive security integration test suite (`server/src/tests/integration/securityHardening.test.js`: 24 passing).
+- [x] Monorepo test suite verification: 37 test files, 261 passing tests with 0 failures.
+- [x] Linting verification with 0 errors and 0 warnings across monorepo (`npm run lint`).
+- [x] Production build verification (`npm run build` completed cleanly).
 ---
 
 ## 📌 Rules for Stage Progression

@@ -146,3 +146,60 @@ dist/assets/index-D_MaqjKS.js   147.26 kB │ gzip: 47.41 kB
   "message": "APIForge server is running"
 }
 ```
+
+---
+
+## 🔒 Stage 11: Security & Reliability Hardening Test Verification
+
+### 1. Monorepo Vitest Execution Summary
+**Execution Date:** 2026-11-07  
+**Command:** `npm test`  
+**Test Suites:** 37 passed (37 total)  
+**Total Tests:** 261 passed (261 total)  
+**Failures / Regressions:** 0  
+
+- **Server (`apiforge-server`):** 26 test files, 215 tests passing.
+- **Client (`apiforge-client`):** 11 test files, 46 tests passing.
+
+### 2. Comprehensive Security Hardening Integration Suite (`securityHardening.test.js`)
+**Test Suite:** `server/src/tests/integration/securityHardening.test.js` (24 passing)
+- ✅ `Authentication Hardening & Token Defense`:
+  - Rejects unauthenticated requests with 401 Unauthorized.
+  - Rejects malformed Bearer tokens with 401 Unauthorized.
+  - Rejects tokens forged with incorrect secret keys with 401 Unauthorized.
+  - Rejects expired tokens with 401 Unauthorized.
+  - Excludes password hashes and plain passwords from `/api/auth/me`, `/register`, and `/login`.
+- ✅ `BOLA / IDOR Defense & Multi-Tenant Isolation`:
+  - Prevents User B from viewing, modifying, deleting, or probing User A targets (404 isolation).
+  - Prevents User B from viewing, starting, cancelling, or deleting User A test runs.
+  - Prevents User B from rerunning User A test runs via `/api/history/:id/rerun` (403 Forbidden).
+  - Prevents User B from viewing or exporting User A test results (403 Forbidden).
+  - Prevents User B from comparing User A test runs in comparative analytics (403 Forbidden).
+- ✅ `Multi-Layer SSRF Defenses`:
+  - Blocks AWS/GCP cloud metadata IP (`169.254.169.254`).
+  - Blocks private RFC 1918 Class A, B, and C address spaces (`10.0.0.1`, `172.16.0.5`, `192.168.1.100`).
+  - Blocks loopback IP addresses when not pointing to the whitelisted Demo API port (`127.0.0.1:8080`, `:27017`, `:22`).
+  - Blocks non-HTTP/HTTPS protocol schemes (`file:///etc/passwd`, `ftp://`, `gopher://`).
+  - Safely permits the authorized built-in Demo API (`http://localhost:5001`).
+- ✅ `Injection Defense & Input Sanitization`:
+  - Escapes dangerous input sequences preventing k6 script injection via JSON string constant serialization.
+  - Defends against regex ReDoS attacks in history search queries without catastrophic backtracking or crashes.
+- ✅ `Secret Redaction Across All Data Layers`:
+  - Masks secret headers (`Authorization`, `X-Api-Key`, `isSecret: true`) in target responses.
+  - Masks sensitive headers in test run creation and retrieval.
+  - Masks sensitive headers in results response (`GET /api/results/:runId`).
+  - Masks sensitive headers in history listing (`GET /api/history`).
+  - Masks sensitive headers in JSON and CSV export endpoints.
+- ✅ `Concurrency Limits & Resource Quotas`:
+  - Enforces maximum 2 concurrent active tests per user and returns 409 Conflict.
+- ✅ `Process Lifecycle & Crash Recovery Reconciler`:
+  - Startup reconciler (`reconcileInterruptedRuns()`) recovers orphaned `RUNNING` or `QUEUED` runs after server restart to `FAILED` with `INTERNAL_ERROR`.
+
+### 3. Static Analysis & Code Quality Verification
+**Command:** `npm run lint`  
+**Results:** 0 errors, 0 warnings across all workspaces (`server`, `client`).
+
+### 4. Client Production Build Verification
+**Command:** `npm run build`  
+**Results:** Production bundle built cleanly in 13.85s without errors.
+

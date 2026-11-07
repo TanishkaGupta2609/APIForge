@@ -10,7 +10,28 @@ import {
 import processManager from '../../load-testing/processManager.js';
 import k6Runner from '../../load-testing/k6Runner.js';
 import { checkK6Installed } from '../../load-testing/k6Detector.js';
+import { redactSensitiveHeaders } from '../results/results.service.js';
 import env from '../../config/env.js';
+
+/**
+ * Sanitizes a TestRun JSON representation by masking sensitive headers.
+ *
+ * @param {object} testRunJson
+ * @returns {object}
+ */
+export function sanitizeTestRun(testRunJson) {
+  if (!testRunJson) return testRunJson;
+  if (testRunJson.configuration?.headers) {
+    return {
+      ...testRunJson,
+      configuration: {
+        ...testRunJson.configuration,
+        headers: redactSensitiveHeaders(testRunJson.configuration.headers),
+      },
+    };
+  }
+  return testRunJson;
+}
 
 /**
  * Creates and queues a new test run after enforcing tenant authorization,
@@ -72,7 +93,7 @@ export async function createTestRun(userId, input) {
     },
   });
 
-  return testRun.toJSON();
+  return sanitizeTestRun(testRun.toJSON());
 }
 
 /**
@@ -102,7 +123,7 @@ export async function listTestRuns(userId, { page = 1, limit = 10, status, targe
     .populate('target', 'name baseUrl');
 
   return {
-    testRuns: testRuns.map((r) => r.toJSON()),
+    testRuns: testRuns.map((r) => sanitizeTestRun(r.toJSON())),
     pagination: {
       page,
       limit,
@@ -132,7 +153,7 @@ export async function getTestRunById(userId, testRunId) {
     throw new ForbiddenError('You do not have permission to access this test run.');
   }
 
-  return testRun.toJSON();
+  return sanitizeTestRun(testRun.toJSON());
 }
 
 /**

@@ -200,7 +200,10 @@ export async function getResultByRunId(userId, runId) {
       name: runJson.configuration?.targetSnapshot?.name || 'Target API',
       baseUrl: runJson.configuration?.targetSnapshot?.baseUrl || '',
     },
-    configuration: runJson.configuration,
+    configuration: {
+      ...runJson.configuration,
+      headers: redactSensitiveHeaders(runJson.configuration?.headers),
+    },
     metrics,
     charts: {
       percentiles,
@@ -565,7 +568,10 @@ export async function compareTestRuns(userId, baseRunId, compareRunId) {
       status: baseJson.status,
       createdAt: baseJson.createdAt,
       target: baseJson.target || baseConfig.targetSnapshot,
-      configuration: baseConfig,
+      configuration: {
+        ...baseConfig,
+        headers: redactSensitiveHeaders(baseConfig.headers),
+      },
       metrics: baseMetrics,
     },
     compareRun: {
@@ -574,7 +580,10 @@ export async function compareTestRuns(userId, baseRunId, compareRunId) {
       status: compareJson.status,
       createdAt: compareJson.createdAt,
       target: compareJson.target || compareConfig.targetSnapshot,
-      configuration: compareConfig,
+      configuration: {
+        ...compareConfig,
+        headers: redactSensitiveHeaders(compareConfig.headers),
+      },
       metrics: compareMetrics,
     },
     compatibility: {
