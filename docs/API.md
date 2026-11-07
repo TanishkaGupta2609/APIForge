@@ -104,12 +104,13 @@ Authorization: Bearer <jwt_token>
 
 ---
 
-### 3.5 Results & Comparison Endpoints (Stage 8 & 10)
+### 3.5 Results, Comparison & Trends Endpoints (Stage 8, 10 & 12)
 | Method | Endpoint | Auth Required | Description |
 |---|---|---|---|
 | `GET` | `/api/results/:runId` | Yes | Fetch normalized performance metrics, SLA thresholds, and chart data |
 | `GET` | `/api/results/dashboard/summary` | Yes | Fetch aggregate performance metrics and recent test runs across user account |
-| `GET` | `/api/results/:runId/export`| Yes | Export metrics as CSV or JSON format (Stage 10) |
+| `GET` | `/api/results/trends` | Yes | Historical performance trajectory over time with throughput and latency deltas (Stage 12) |
+| `GET` | `/api/results/:runId/export`| Yes | Export metrics as CSV, JSON, or standalone HTML format (Stage 10 & 12) |
 | `GET` | `/api/results/compare` | Yes | Compare metrics side-by-side across test runs (Stage 10) |
 
 #### `GET /api/results/:runId` (Implemented in Stage 8)

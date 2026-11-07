@@ -75,10 +75,24 @@ Represents a test execution lifecycle, immutable configuration snapshot, progres
     vus: { type: Number, required: true, min: 1, max: 50 },
     duration: { type: Number, required: true, min: 5, max: 300 },
     rampUpDuration: { type: Number, default: 0 },
+    workloadProfile: { type: String, enum: ['fixed', 'ramping', 'spike', 'stress'], default: 'fixed' },
+    stages: [
+      {
+        duration: { type: Number, required: true },
+        target: { type: Number, required: true }
+      }
+    ],
     thresholds: {
       httpReqDurationP95: { type: Number, default: null },
       httpReqFailedRate: { type: Number, default: null }
     }
+  },
+
+  // SLA Threshold Evaluation Breakdown
+  thresholdEvaluation: {
+    hasThresholds: { type: Boolean, default: false },
+    allPassed: { type: Boolean, default: null },
+    rules: { type: Array, default: [] }
   },
 
   // Authoritative lifecycle state machine
@@ -114,6 +128,7 @@ Represents a test execution lifecycle, immutable configuration snapshot, progres
     maxLatency: { type: Number, default: null },
     failureRate: { type: Number, default: null },
     networkErrors: { type: Number, default: null },
+    thresholdsPassed: { type: Boolean, default: null },
     statusCodeCounts: { type: Map, of: Number }
   },
 
