@@ -466,7 +466,7 @@ export function CreateTestModal({ isOpen, onClose, onTestCreated }) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800 sticky bottom-0 bg-slate-900/95 backdrop-blur-sm -mx-5 px-5 -mb-5 pb-5 z-10 rounded-b-xl">
           <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
