@@ -61,3 +61,9 @@ export class InternalServerError extends AppError {
     super(message, 500, 'INTERNAL_SERVER_ERROR');
   }
 }
+
+export class ExecutionError extends AppError {
+  constructor(message = 'Execution error occurred', details = []) {
+    super(message, 500, 'EXECUTION_ERROR', details);
+  }
+}
